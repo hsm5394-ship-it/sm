@@ -26,7 +26,7 @@
   <h1>森の巨人</h1>
   <p>잠든 거인이 깨어나는 아침</p>
   <button id="go" disabled>배경을 그리는 중…</button>
-  <small>소리를 켜고 감상하세요 · 약 47초</small>
+  <small>소리를 켜고 감상하세요 · 약 52초</small>
 </div>
 <script>
 'use strict';
@@ -779,7 +779,7 @@ const DRAW_ORDER=[['fUA','upperArm','far'],['fFA','foreArm','far'],['fH','hand',
   ['head','head'],['nUA','upperArm'],['pauldron','pauldron'],['nFA','foreArm'],['nH','hand']];
 
 /* ---------------- timeline ---------------- */
-const DUR=47.5;
+const DUR=52.2;
 function wideSky(t){const u=eio(clamp((t-37.4)/6.2));return{x:lerp(640,780,u),y:lerp(250,-260,u),z:1.0}}
 const SHOTS=[
   {t0:0,   t1:7.6, cam:t=>{const u=eio(t/7.6);return{x:lerp(632,646,u),y:lerp(392,416,u),z:lerp(1.0,1.12,u)}}},
@@ -790,7 +790,8 @@ const SHOTS=[
   {t0:31.3,t1:37.4,cam:t=>{const u=eio((t-31.3)/6.1);return{x:lerp(640,636,u),y:lerp(392,384,u),z:lerp(1.18,1.1,u)}}},
   {t0:37.4,t1:40.1,cam:wideSky},
   {t0:40.1,t1:42.5,cam:t=>{const fr=flight(t).root;const u=(t-40.1)/2.4;return{x:fr.x+fr.s*60+lerp(-6,5,u),y:fr.y-fr.s*330+lerp(4,-3,u),z:lerp(4.6,4.85,u)}}}, // insert: the look back
-  {t0:42.5,t1:99,  cam:wideSky},
+  {t0:42.5,t1:45.4,cam:wideSky},
+  {t0:45.4,t1:99,  cam:t=>{const u=eio((t-45.4)/6.8);return{x:lerp(612,606,u),y:lerp(548,540,u),z:lerp(1.62,1.74,u)}}}, // the empty clearing
 ];
 function shotAt(t){for(const s of SHOTS)if(t<s.t1)return s;return SHOTS[SHOTS.length-1]}
 const warmth=t=>ss(4,19,t);
@@ -867,15 +868,15 @@ function simStep(dt){
   ev('lift',34.62,()=>{spawnDust(RX,RG,50,48,3);spawnDebrisFrom(O,'nFt',-30,60,10,20,'dirt',-120);spawnDebrisFrom(O,'fFt',-30,60,10,20,'dirt',-120);
     for(let i=0;i<70;i++)SIM.leaves.push(mkLeaf(RX+(r()-.5)*500,RG-r()*300,(r()-.5)*160,-60-r()*120,.8+r()*.9))});
   // leaves raining in the wide finale (near the lens)
-  if(t>37.4&&t<46&&r()<dt*7)SIM.leaves.push(Object.assign(mkLeaf(r()*1280,-60,(r()-.3)*30,30+r()*20,2.6+r()*3.4),{screen:true}));
-  if(t>37.4&&t<46&&r()<dt*10)SIM.leaves.push(Object.assign(mkLeaf(r()*1280,-30,(r()-.3)*20,20+r()*15,.9+r()*1),{screen:true}));
+  if(t>37.4&&t<50.5&&r()<dt*(t>45.4?2.2:7))SIM.leaves.push(Object.assign(mkLeaf(r()*1280,-60,(r()-.3)*30,30+r()*20,2.6+r()*3.4),{screen:true}));
+  if(t>37.4&&t<50.5&&r()<dt*(t>45.4?1.5:10))SIM.leaves.push(Object.assign(mkLeaf(r()*1280,-30,(r()-.3)*20,20+r()*15,.9+r()*1),{screen:true}));
   // debris physics
   for(const d of SIM.debris){d.life+=dt;if(d.y<RG+20||d.vy<0){d.vy+=220*dt;d.vx*=1-.3*dt;if(d.kind==='leaf'){d.vy=Math.min(d.vy,38);d.vx+=Math.sin(d.life*3+d.seed)*30*dt}d.x+=d.vx*dt;d.y+=d.vy*dt;d.rot+=d.vr*dt}
     if(d.y>RG+30-d.seed%40){d.vy=0;d.vx=0;d.rest=true}}
-  SIM.debris=SIM.debris.filter(d=>d.life<9);
+  SIM.debris=SIM.debris.filter(d=>d.life<9||d.rest);
   for(const l of SIM.leaves){l.life+=dt;const w=l.screen?0:(t>IGN&&t<IGN+3?Math.sign(l.x-RX)*30:0);
     l.vx+=(Math.sin(l.life*l.fq+l.seed)*l.sway+w-l.vx*.8)*dt;l.vy+=(l.term-l.vy)*1.2*dt;l.x+=l.vx*dt;l.y+=l.vy*dt;l.rot+=l.vr*dt;l.flip+=l.fs*dt}
-  SIM.leaves=SIM.leaves.filter(l=>l.life<16&&l.y<(l.screen?800:RG+40));
+  SIM.leaves=SIM.leaves.filter(l=>l.life<(l.screen?16:10.5)&&l.y<(l.screen?800:RG+40));
   for(const d of SIM.dust){d.life+=dt;d.x+=d.vx*dt;d.y+=d.vy*dt;d.vx*=1-1.2*dt;d.vy*=1-1*dt;d.r+=d.g*dt}
   SIM.dust=SIM.dust.filter(d=>d.life<d.max);
   // vines (verlet)
@@ -1087,6 +1088,16 @@ function drawFlockBird(x,y,s,ph,lit){
   if(lit){ctx.fillStyle='rgba(255,214,150,.8)';ctx.beginPath();ctx.ellipse(x+.6*s,y-.6*s,1.4*s,.5*s,-.2,0,TAU);ctx.fill()}
 }
 /* the little songbird that lands on the giant's shoulder */
+/* birds come back to the hollow where the giant knelt */
+function endBirds(t){
+  const P=[[560,612,46.3,1],[648,606,47.0,-1],[700,618,47.9,-1],[520,628,48.8,1]];const out=[];
+  for(const[px,py,tl,face]of P){const t0=tl-1.1;if(t<t0)continue;
+    if(t<tl){const u=(t-t0)/1.1,e=1-Math.pow(1-u,2),k=1-e;const sx=px-face*-260,sy=py-170,cx=px-face*-80,cy=py-110;
+      out.push({x:k*k*sx+2*k*e*cx+e*e*px,y:k*k*sy+2*k*e*cy+e*e*py,fly:true,face,wing:u>.78?'brake':'flap',ph:t*26})}
+    else{const tt=t-tl;let hop=0;const hp=(tt*.9+px)%2.6;if(hp<.25)hop=Math.sin(hp/.25*Math.PI)*3;
+      out.push({x:px,y:py-hop,fly:false,face:Math.floor((tt+px*.01)/1.7)%2?face:-face,tilt:Math.sin(tt*2.3+px)>.7?.3:0})}}
+  return out;
+}
 function birdState(t,O){
   const perch=Mx.ap(O.pauldron,6,-46);
   const land=11.25,leave=14.58;
@@ -1202,11 +1213,12 @@ function render(t){
   const fl=flight(t);
   const O=fl?rig(poseAt(Math.floor(t*12)/12),fl.root):robotAt(t);O._s=fl?fl.root.s/RS:1;
   if(t<37.4){camSet(cam,1);ctx.fillStyle=`rgba(20,24,30,${.45*clamp(1-(-launchY(t))/300)})`;ctx.beginPath();ctx.ellipse(RX+20,RG+2,170,22,0,0,TAU);ctx.fill()}
-  drawShaft(t,cam,ss(9,13,t)*(1-ss(36,38,t)));
+  drawShaft(t,cam,ss(9,13,t)*(1-ss(36,38,t))+1.6*ss(45.4,47.5,t));
   drawEngines(t,cam,O);
   drawRobot(t,cam,O,{allLit:t>=37.4});
   drawGlows(t,cam,O);drawLids(t,cam,O);
-  if(t<37.4)drawVines(t,cam,lightLine(t)>520);
+  if(t<37.4||t>=45.4)drawVines(t,cam,lightLine(t)>520);
+  if(t>=45.4)for(const b of endBirds(t))drawSongbird(b,cam,true);
   const bs=t<15.5?birdState(t,O):null;if(bs)drawSongbird(bs,cam,lightLine(t)>440);
   drawDebris(cam,w>.5);
   drawDust(cam);
@@ -1236,7 +1248,7 @@ function render(t){
   const gr=mulberry32(Math.floor(t*24));ctx.translate(-gr()*256,-gr()*256);ctx.fillStyle=ctx.createPattern(GRAIN,'repeat');ctx.fillRect(0,0,cv.width+256,cv.height+256);
   ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
   // fades
-  const fi=1-ss(0,1.6,t),fo=ss(45.6,47.3,t),wf=t>34.6&&t<34.75?.5:0;
+  const fi=1-ss(0,1.6,t),fo=ss(50.4,52.1,t),wf=t>34.6&&t<34.75?.5:0;
   if(fi>0){ctx.fillStyle=`rgba(8,8,14,${fi})`;ctx.fillRect(0,0,cv.width,cv.height)}
   if(wf){ctx.fillStyle=`rgba(255,250,230,${wf})`;ctx.fillRect(0,0,cv.width,cv.height)}
   if(fo>0){ctx.fillStyle=`rgba(8,8,14,${fo})`;ctx.fillRect(0,0,cv.width,cv.height)}
@@ -1261,8 +1273,8 @@ function startAudio(){
     n.connect(g);out(g,o.rev??.3);s.start(T0+t);s.stop(T0+t+dur+.1);return{s,g}}
   function chirp(t,base){for(let i=0;i<3+Math.random()*4;i++){const tt=t+i*(.07+Math.random()*.05);tone(tt,.06,{f:base*(1+Math.random()*.3),fEnd:base*(1.3+Math.random()*.4),gain:.025,att:.005,rel:.04,rev:.5})}}
   // dawn ambience
-  noise(0,47,{type:'bandpass',f:420,q:.4,gain:.07,att:3,rel:3});
-  noise(0,47,{type:'highpass',f:5000,gain:.012,att:4,rel:3});
+  noise(0,52,{type:'bandpass',f:420,q:.4,gain:.07,att:3,rel:3});
+  noise(0,52,{type:'highpass',f:5000,gain:.012,att:4,rel:3});for(let i=0;i<12;i++)chirp(45.6+Math.random()*5,2700+Math.random()*1500);
   for(let i=0;i<14;i++)chirp(1+Math.random()*12.5,2600+Math.random()*1800);
   for(let i=0;i<10;i++)chirp(38+Math.random()*8,2800+Math.random()*1600);
   // bird alights
@@ -1295,8 +1307,8 @@ function startAudio(){
   // launch
   tone(34.6,2.4,{f:80,fEnd:22,gain:.8,att:.01,rel:2,rev:.4});noise(34.6,4,{type:'bandpass',f:200,fEnd:2400,q:.7,gain:.5,att:.05,rel:3,rev:.5});
   // score: a small nostalgic theme as it climbs into the light
-  const pad=[147,220,277,370,330];pad.forEach((f,i)=>tone(35.2+i*.15,12.3,{f,gain:.035,att:3.5,rel:4,type:i%2?'triangle':'sine',lp:1600,rev:.8}));
-  const mel=[[37.6,440],[38.2,587],[38.8,659],[39.4,740],[40.6,659],[41.2,587],[41.8,494],[42.4,440],[43.6,587],[44.6,880]];
+  const pad=[147,220,277,370,330];pad.forEach((f,i)=>tone(35.2+i*.15,16.6,{f,gain:.035,att:3.5,rel:4,type:i%2?'triangle':'sine',lp:1600,rev:.8}));
+  const mel=[[37.6,440],[38.2,587],[38.8,659],[39.4,740],[40.6,659],[41.2,587],[41.8,494],[42.4,440],[43.6,587],[44.6,880],[46.6,740],[47.4,659],[48.2,587],[49.4,587]];
   mel.forEach(([tt,f])=>{tone(tt,2.2,{f,gain:.05,att:.01,rel:2,rev:.8});tone(tt,1.4,{f:f*2,gain:.012,att:.01,rel:1.3,rev:.8})});
   return A;
 }
