@@ -939,14 +939,47 @@ function drawTree(tr,i,t,cam){
   camSet(cam,1);ctx.translate(tr.x,tr.y);ctx.transform(1,0,sway,1,0,0);
   const L=tr.t.L;ctx.drawImage(L.c,L.x,L.y,L.w,L.h);
 }
+/* hollows pressed into the earth by a century of kneeling */
+let PRINTS=null;
+function makePrints(){
+  const O=rig(KNEEL,{x:RX,y:RG,s:RS});const P=[];
+  const add=(x,y,rx,ry,ang,t0)=>P.push({x,y:Math.max(y,RG-6),rx,ry,ang,t0});
+  const k1=Mx.ap(O.nSh,0,0),a1=Mx.ap(O.nFt,0,0),k2=Mx.ap(O.fSh,0,0),a2=Mx.ap(O.fFt,0,0);
+  add((k1[0]+a1[0])/2,RG+6,Math.abs(k1[0]-a1[0])/2+26,15,0,21.8);   // near shin trench
+  add(k1[0],RG+10,30,17,0,21.6);                                     // near knee
+  add((k2[0]+a2[0])/2,RG-4,Math.abs(k2[0]-a2[0])/2+22,10,0,24.4);    // far shin trench
+  const h1=Mx.ap(O.nH,6,46),h2=Mx.ap(O.fH,6,46);
+  add(h1[0],RG+16,34,14,.05,24.6);add(h2[0],RG+2,26,9,.05,24.6);   // palms
+  PRINTS=P;
+}
+function drawPrints(t,cam){
+  if(!PRINTS)makePrints();camSet(cam,1);
+  for(const p of PRINTS){const a=ss(p.t0,p.t0+.5,t);if(a<=0)continue;const r=mulberry32((p.x*7)|0);
+    ctx.save();ctx.globalAlpha=a;ctx.translate(p.x,p.y);ctx.rotate(p.ang);
+    ctx.beginPath();blobPath(ctx,0,0,p.rx,p.ry,0,mulberry32((p.x*3)|0),.18,12);
+    ctx.fillStyle='#8c7150';ctx.fill();ctx.save();ctx.clip();
+    ctx.beginPath();blobPath(ctx,-p.rx*.06,p.ry*.42,p.rx*.98,p.ry*.95,0,mulberry32((p.x*3)|0),.18,12);ctx.fillStyle='#3a2c24';ctx.fill();
+    for(let i=0;i<10;i++)dab(ctx,(r()-.5)*p.rx*1.6,(r()-.2)*p.ry,2+r()*4,1+r()*1.6,0,r()<.5?hex('#2a211c'):hex('#5a4634'),.6,r);
+    // standing water catching the sky in the deepest hollows
+    if(p.rx>40){ctx.beginPath();ctx.ellipse(p.rx*.1,p.ry*.35,p.rx*.45,p.ry*.28,0,0,TAU);ctx.fillStyle='rgba(240,214,170,.55)';ctx.fill()}
+    ctx.restore();
+    ink(ctx,smooth(ell(0,0,p.rx,p.ry,16),true,3),true,1,'lit',(p.x*5)|0,{col:'#2a1d18'});
+    // torn sod and grass curling over the lip
+    for(let i=0;i<p.rx*.5;i++){const u=r()*TAU,x=Math.cos(u)*p.rx*(.95+r()*.15),y=Math.sin(u)*p.ry*(.95+r()*.2);
+      grassBlade(ctx,x,y,4+r()*6,(r()-.5)*6,.8,r()<.5?'#4f6a3c':'#a7b25a')}
+    ctx.restore()}
+  ctx.globalAlpha=1;
+}
 function drawGrassTufts(t,cam){
   camSet(cam,1);const r=mulberry32(91);
   const wind=SIM.grassB||0;
+  if(!PRINTS)makePrints();
   for(let i=0;i<150;i++){const x=400+r()*480,y=RG+2+r()*36;const n=4+(r()*5|0);const near=(y-RG)/36;
+    const flat=PRINTS.some(p=>t>p.t0&&Math.abs(x-p.x)<p.rx*1.05&&Math.abs(y-p.y)<p.ry*2.2);
     const dark=mix(hex('#2c4433'),hex('#1f3329'),near),lit=mix(hex('#8ea653'),hex('#c6c06c'),r());
     for(let k=0;k<n;k++){const h=(10+r()*16)*(1+near*.5);const ph=r()*TAU;
       const sw=Math.sin(t*1.6+ph+x*.02)*1.4+wind*h*.25*Math.sign(x-RX||1);
-      grassBlade(ctx,x+(r()-.5)*8,y,h,(r()-.5)*h*.5+sw,1.1,rgb(r()<.6?dark:lit))}}
+      const c=rgb(r()<.6?dark:lit),gx=x+(r()-.5)*8,gl=(r()-.5)*h*.5+sw;if(!flat)grassBlade(ctx,gx,y,h,gl,1.1,c)}}
 }
 function drawVines(t,cam,lit){
   camSet(cam,1);
@@ -1209,6 +1242,7 @@ function render(t){
   camSet(cam,1);drawLayer(LAY.ground);
   // trees behind the giant
   TREES.forEach((tr,i)=>{if(!tr.front)drawTree(tr,i,t,cam)});
+  drawPrints(t,cam);
   // giant's contact shadow
   const fl=flight(t);
   const O=fl?rig(poseAt(Math.floor(t*12)/12),fl.root):robotAt(t);O._s=fl?fl.root.s/RS:1;
