@@ -259,7 +259,7 @@ function paintMountains(){
   paperize(L,.55);return L;
 }
 function paintFarForest(){
-  const L=makeLayer(-260,380,1800,240,2.2),g=L.g,r=mulberry32(31);
+  const L=makeLayer(-260,380,1800,240,2.8),g=L.g,r=mulberry32(31);
   const f=x=>448-26*fbm(x*.004+40)-10*fbm(x*.03);
   const pal=[hex('#56707c'),hex('#738c8a'),hex('#b9b293'),hex('#e8d6a8')];
   g.beginPath();g.moveTo(-260,620);for(let x=-260;x<=1540;x+=4)g.lineTo(x,f(x)+8);g.lineTo(1540,620);g.closePath();g.fillStyle=rgb(pal[0]);g.fill();
@@ -272,7 +272,7 @@ function paintFarForest(){
   paperize(L,.6);return L;
 }
 function paintBackForest(){
-  const L=makeLayer(-260,400,1800,300,2.6),g=L.g,r=mulberry32(41);
+  const L=makeLayer(-260,400,1800,300,3.2),g=L.g,r=mulberry32(41);
   const rows=[
     {y:478,rmin:16,rmax:30,pal:['#3c5a62','#5a786f','#99a57f','#d6c896'],mist:.55},
     {y:510,rmin:20,rmax:38,pal:['#2b4a45','#456b56','#83a05d','#cbc57b'],mist:.4},
@@ -356,10 +356,16 @@ function paintTree(seed,h,spread,trunkW,lean,pal,trunkPal){
     left.push([cx-ww/2,cy]);right.push([cx+ww/2,cy]);mid.push([cx,cy,ww])}
   // branches
   const br=[];
-  for(let k=0;k<6;k++){const s=.55+r()*.42;const m=mid[Math.round(s*N)];const dir=r()<.5?-1:1;
-    const ex=m[0]+dir*spread*(.35+r()*.5),ey=m[1]-spread*(.25+r()*.45);br.push([m[0],m[1],ex,ey,m[2]*.4])}
+  // gnarled limbs: alternate sides, reaching wide and low like an old broadleaf
+  for(let k=0;k<8;k++){const s=.34+k/8*.6+r()*.05;const m=mid[Math.min(N,Math.round(s*N))];const dir=(k%2?1:-1)*(r()<.85?1:-1);
+    const reach=spread*(.55+r()*.5)*(1.1-s*.4);
+    const ex=m[0]+dir*reach,ey=m[1]-spread*(.08+r()*.32)-(1-s)*spread*.1;br.push([m[0],m[1],ex,ey,m[2]*(.32+(1-s)*.12)]);
+    if(r()<.7){const fx=ex-dir*reach*(.25+r()*.2),fy=ey+spread*.02;br.push([fx,fy,fx+dir*spread*(.2+r()*.2),fy-spread*(.18+r()*.2),m[2]*.14])}}
   const [d0,d1,d2]=trunkPal.map(hex);
-  for(const b of br){g.beginPath();g.moveTo(b[0]-b[4],b[1]);g.quadraticCurveTo((b[0]+b[2])/2,b[1]-10,b[2],b[3]);g.quadraticCurveTo((b[0]+b[2])/2+b[4],b[1]-10+b[4],b[0]+b[4],b[1]+b[4]*2);g.closePath();g.fillStyle=rgb(d0);g.fill()}
+  for(const b of br){const mx=(b[0]+b[2])/2,my=Math.min(b[1],b[3])+(b[1]-b[3])*.15;
+    g.beginPath();g.moveTo(b[0]-b[4],b[1]);g.quadraticCurveTo(mx,my-b[4]*.5,b[2],b[3]);g.quadraticCurveTo(mx+b[4]*.6,my+b[4]*.9,b[0]+b[4],b[1]+b[4]*2);g.closePath();g.fillStyle=rgb(d0);g.fill();
+    g.beginPath();g.moveTo(b[0],b[1]-b[4]*.3);g.quadraticCurveTo(mx,my-b[4]*.45,b[2],b[3]);g.quadraticCurveTo(mx,my-b[4]*.1,b[0],b[1]+b[4]*.2);g.closePath();g.fillStyle=rgb(d1);g.fill();
+    ink(g,smooth([[b[0]-b[4],b[1]],[mx,my-b[4]*.5],[b[2],b[3]]],false,6),false,1.1,'bg',(b[2]*7)|0)}
   // roots + trunk
   const poly=[...left,...right.slice().reverse()];
   const roots=[];for(let k=0;k<5;k++){const dir=k<2?-1:k>2?1:(r()<.5?-1:1);roots.push([dir*trunkW*(.6+r()*1.2),8+r()*14])}
@@ -377,10 +383,13 @@ function paintTree(seed,h,spread,trunkW,lean,pal,trunkPal){
   ink(g,smooth(left,false,3),false,1.6,'bg',seed);ink(g,smooth(right,false,3),false,1.1,'bg',seed+1);
   // crown
   const P=pal.map(hex);const cl=[];
-  const lobes=[[tx,ty-spread*.42,spread*.5],[tx+spread*.15,ty-spread*.75,spread*.32]];
-  for(const b of br)lobes.push([b[2],b[3],spread*(.26+r()*.16)]);
-  for(const lb of lobes){const n=4+(r()*4|0);
-    for(let i=0;i<n;i++){const a=r()*TAU,d=Math.sqrt(r());cl.push([lb[0]+Math.cos(a)*lb[2]*d,lb[1]+Math.sin(a)*lb[2]*.55*d,lb[2]*(.42+r()*.34)])}}
+  // foliage gathers in flattened tiers at the limb tips, with sky gaps between
+  const lobes=[[tx+spread*.05,ty-spread*.38,spread*.42]];
+  for(const b of br)lobes.push([b[2],b[3]-spread*.04,spread*(b[4]>trunkW*.2?.34:.24)*(.8+r()*.4)]);
+  for(const lb of lobes){const n=5+(r()*5|0);
+    for(let i=0;i<n;i++){const a=r()*TAU,d=Math.sqrt(r());cl.push([lb[0]+Math.cos(a)*lb[2]*1.15*d,lb[1]+Math.sin(a)*lb[2]*.42*d,lb[2]*(.32+r()*.3)])}
+    // a drooping underside
+    for(let i=0;i<2;i++)cl.push([lb[0]+(r()-.5)*lb[2]*1.4,lb[1]+lb[2]*(.3+r()*.15),lb[2]*(.22+r()*.12)])}
   cl.sort((a,b)=>a[1]-b[1]);
   for(const c of cl)clump(g,c[0],c[1],c[2],P,r);
   // hanging moss/vines
@@ -686,7 +695,7 @@ const PARTS={
     // roots draped over the back
     for(let i=0;i<5;i++)line(g,[[-12,34],[-12-i*8,48+i*2],[-20-i*14,60+i*4]],2.2,m,74+i);
     const pal=fpal(m,'leaf');const cl=[];
-    for(let i=0;i<22;i++){const a=r()*TAU,d=Math.sqrt(r());cl.push([-44+Math.cos(a)*70*d,-150+Math.sin(a)*40*d,16+r()*14])}
+    for(let i=0;i<30;i++){const a=r()*TAU,d=Math.sqrt(r());cl.push([-44+Math.cos(a)*92*d,-148+Math.sin(a)*36*d,11+r()*13])}
     cl.push([-96,-122,18],[30,-100,16],[-110,-110,14]);
     cl.sort((a,b)=>a[1]-b[1]);for(const c of cl)clump(g,c[0],c[1],c[2],pal,r);
     hangMoss(g,-100,30,-112,18,m,r);
@@ -1257,8 +1266,8 @@ async function build(){
   LAY.fg=paintForeground();await step('fg');
   LAY.mist1=paintMist(3,2200,200,hex('#fff0dc'));LAY.mist2=paintMist(4,2200,220,hex('#fff4e2'));await step('mist');
   const defs=[
-    {x:880,y:628,seed:111,h:300,sp:110,tw:24,lean:.06,p:'back',tp:'back'},
-    {x:300,y:636,seed:121,h:430,sp:160,tw:34,lean:-.1,p:'back',tp:'back'},
+    {x:900,y:626,seed:111,h:290,sp:85,tw:20,lean:.06,p:'back',tp:'back'},
+    {x:290,y:634,seed:121,h:400,sp:115,tw:28,lean:-.1,p:'back',tp:'back'},
     {x:1040,y:652,seed:117,h:520,sp:165,tw:40,lean:.04,p:'mid',tp:'mid'},
     {x:1230,y:712,seed:114,h:700,sp:190,tw:58,lean:-.05,p:'front',tp:'front',front:1},
     {x:60,y:740,seed:119,h:780,sp:230,tw:84,lean:.07,p:'front',tp:'front',front:1},
