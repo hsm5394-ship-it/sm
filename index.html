@@ -695,9 +695,9 @@ const PARTS={
     // roots draped over the back
     for(let i=0;i<5;i++)line(g,[[-12,34],[-12-i*8,48+i*2],[-20-i*14,60+i*4]],2.2,m,74+i);
     const pal=fpal(m,'leaf');const cl=[];
-    for(let i=0;i<30;i++){const a=r()*TAU,d=Math.sqrt(r());cl.push([-44+Math.cos(a)*92*d,-148+Math.sin(a)*36*d,11+r()*13])}
-    cl.push([-96,-122,18],[30,-100,16],[-110,-110,14]);
-    cl.sort((a,b)=>a[1]-b[1]);for(const c of cl)clump(g,c[0],c[1],c[2],pal,r);
+    const tiers=[[-50,-168,62,9],[-92,-122,38,6],[22,-104,34,5],[-36,-136,50,6]];
+    for(const[tx,ty,w,n]of tiers)for(let i=0;i<n;i++){const u=(i+.5)/n-.5;cl.push([tx+u*w*1.7+(r()-.5)*8,ty+Math.abs(u)*w*.35+(r()-.5)*8,w*(.34+r()*.18)])}
+    cl.sort((a,b)=>a[1]-b[1]);for(const c of cl)clump(g,c[0],c[1],c[2],pal,r,[.78,-.62],.68);
     hangMoss(g,-100,30,-112,18,m,r);
   }},
 };
@@ -818,7 +818,7 @@ function spawnDebrisFrom(O,part,x0,x1,y,n,kind,vy=0){
     const big=r()<.25;
     SIM.debris.push({x:p[0],y:p[1],vx:(r()-.5)*24,vy:vy+(r()-.2)*-10,kind:kind==='mix'?(r()<.55?'dirt':r()<.6?'leaf':'twig'):kind,s:big?2.2+r()*2:1+r()*1.4,rot:r()*TAU,vr:(r()-.5)*5,seed:(r()*1e6)|0,life:0})}
 }
-function spawnDust(x,y,n,size,spread=1){const r=SIM.r;for(let i=0;i<n;i++)SIM.dust.push({x:x+(r()-.5)*size*2*spread,y:y-r()*size*.3,vx:(r()-.5)*40*spread,vy:-6-r()*12,r:size*(.4+r()*.6),g:size*.6*(.5+r()),life:0,max:1.6+r()*1.6,seed:(r()*1e6)|0})}
+function spawnDust(x,y,n,size,spread=1){const r=SIM.r;for(let i=0;i<n;i++)SIM.dust.push({x:x+(r()-.5)*size*2*spread,y:y-r()*size*.3,vx:(r()-.5)*70*spread,vy:-4-r()*10,r:size*(.3+r()*.4),g:size*(.5+r()*.7),life:0,max:2.2+r()*1.8,seed:(r()*1e6)|0})}
 function simStep(dt){
   const t=SIM.t+dt,r=SIM.r,D=SIM.done;
   const O=robotAt(t);
@@ -1006,13 +1006,20 @@ function drawEngines(t,cam,O){
 }
 function drawDust(cam){
   camSet(cam,1);
-  for(const d of SIM.dust){const k=clamp((d.life-d.max*.5)/(d.max*.5));const r=mulberry32(d.seed);
-    const n=5;ctx.globalAlpha=(1-k)*.95;
-    for(let i=0;i<n;i++){const x=d.x+(r()-.5)*d.r*1.8,y=d.y+(r()-.5)*d.r*.6-i*d.r*.08,rr=d.r*(.4+r()*.6)*(1-k*.3);
-      const sd=(r()*1e6)|0;
-      ctx.beginPath();blobPath(ctx,x,y,rr,rr*.8,0,mulberry32(sd),.35,9);ctx.fillStyle='#6f6158';ctx.fill();
-      ctx.save();ctx.clip();ctx.beginPath();blobPath(ctx,x+rr*.3,y-rr*.35,rr*.85,rr*.7,0,mulberry32(sd),.35,9);ctx.fillStyle='#a8917a';ctx.fill();
-      ctx.beginPath();blobPath(ctx,x+rr*.5,y-rr*.55,rr*.55,rr*.4,0,mulberry32(sd+1),.35,9);ctx.fillStyle='#e0c595';ctx.fill();ctx.restore()}
+  for(const d of SIM.dust){const k=clamp(d.life/d.max);const r=mulberry32(d.seed);
+    const a=(1-Math.pow(k,1.6))*.78;if(a<=0)continue;
+    const n=6;
+    for(let i=0;i<n;i++){const ox=(r()-.5)*d.r*2.4,oy=(r()-.7)*d.r*.5,rr=d.r*(.45+r()*.55);
+      const x=d.x+ox,y=d.y+oy,sd=(r()*1e6)|0;
+      ctx.globalAlpha=a*(.6+.4*(1-k));
+      ctx.beginPath();blobPath(ctx,x,y,rr*1.35,rr*.78,0,mulberry32(sd),.3,11);ctx.fillStyle='#8a7c80';ctx.fill();
+      ctx.save();ctx.clip();
+      ctx.beginPath();blobPath(ctx,x+rr*.28,y-rr*.3,rr*1.25,rr*.66,0,mulberry32(sd),.3,11);ctx.fillStyle='#b9a68e';ctx.fill();
+      ctx.beginPath();blobPath(ctx,x+rr*.6,y-rr*.55,rr*.7,rr*.32,0,mulberry32(sd+1),.4,9);ctx.fillStyle='#e8d2a6';ctx.fill();
+      ctx.restore()}
+    // dissolving edge flecks
+    ctx.globalAlpha=a*.7;ctx.fillStyle='#c4ae90';
+    for(let i=0;i<8;i++){const fx=d.x+(r()-.5)*d.r*3.4*(1+k),fy=d.y-r()*d.r*(.6+k);ctx.beginPath();ctx.ellipse(fx,fy,1.4+r()*2.4,.8+r()*1.2,0,0,TAU);ctx.fill()}
   }ctx.globalAlpha=1;
 }
 function drawDebris(cam,lit){
