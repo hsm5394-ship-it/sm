@@ -35,7 +35,7 @@
    Backgrounds are painted stroke-by-stroke into gouache layers at load;
    the robot is a cel-shaded, hand-inked rig animated on twos.
    ===================================================================== */
-const W=1280,H=720,OUT=1.5;
+const W=1280,H=720;let OUT=1.5;
 const cv=document.getElementById('c');cv.width=W*OUT;cv.height=H*OUT;
 const ctx=cv.getContext('2d');
 const TAU=Math.PI*2;
@@ -437,7 +437,9 @@ function paintMist(seed,w,h,col){
   for(let i=0;i<260;i++){const x=r()*w,y=h*.25+r()*h*.55;dab(g,x,y,60+r()*160,8+r()*22,(r()-.5)*.05,jit(col,r,10),.08+r()*.12,r,.4)}
   g.filter='none';
   for(let i=0;i<120;i++){const x=r()*w,y=h*.3+r()*h*.45;dab(g,x,y,40+r()*120,2+r()*5,(r()-.5)*.04,col,.07+r()*.08,r,.3)}
-  return L;
+  // flatten into a half-resolution plain canvas: mist is soft, and this keeps it on the fast path
+  const c=document.createElement('canvas');c.width=Math.ceil(w/2);c.height=Math.ceil(h/2);c.getContext('2d').drawImage(L.c,0,0,c.width,c.height);
+  L.c=c;return L;
 }
 
 /* ---------------- the giant ---------------- */
@@ -1375,10 +1377,16 @@ function loop(now){
   const t=(now-t0)/1000;
   if(t>=DUR){playing=false;renderAt(DUR-.01);const ov=document.getElementById('ov');ov.style.display='flex';ov.style.opacity=1;
     document.getElementById('go').textContent='다시 보기';return}
-  const f=Math.floor(t*24);if(f!==lastF){lastF=f;renderAt(f/24)}
+  const f=Math.floor(t*24);
+  if(f!==lastF){lastF=f;const s=performance.now();renderAt(f/24);
+    // adaptive resolution: keep 24 fps on slower machines
+    PERF.push(performance.now()-s);if(PERF.length>=18){const avg=PERF.reduce((a,b)=>a+b)/PERF.length;PERF=[];
+      const i=SCALES.indexOf(OUT);if(avg>34&&i<SCALES.length-1)setScale(SCALES[i+1]);}}
   requestAnimationFrame(loop);
 }
-function play(){
+let PERF=[];const SCALES=[1.5,1,.8];
+function setScale(s){OUT=s;cv.width=Math.round(W*s);cv.height=Math.round(H*s)}
+function play(){PERF=[];
   const ov=document.getElementById('ov');ov.style.opacity=0;setTimeout(()=>ov.style.display='none',1200);
   try{if(audio)audio.close()}catch(e){}
   audio=startAudio();simReset();lastF=-1;playing=true;t0=performance.now();requestAnimationFrame(loop);
