@@ -739,6 +739,10 @@ const KEYS=[
   [34.5,P({px:12,py:-198,torso:.22,head:-.44,nTh:-.52,nSh:.44,nFt:0,fTh:-.22,fSh:.4,fFt:0,nUA:.58,nFA:.45,nH:.32,fUA:.48,fFA:.32,fH:.22,eng:.2})],
   [34.75,P({px:12,py:-230,torso:-.04,head:-.5,nTh:.12,nSh:.2,nFt:.5,fTh:.2,fSh:.3,fFt:.55,nUA:.35,nFA:.22,nH:.2,fUA:.3,fFA:.18,fH:.15,eng:0})], // release
   [36,P({px:12,py:-230,torso:-.02,head:-.48,nTh:.14,nSh:.28,nFt:.6,fTh:.22,fSh:.34,fFt:.6,nUA:.32,nFA:.2,nH:.2,fUA:.28,fFA:.16,fH:.15,eng:0})],
+  [39.6,P({px:12,py:-230,torso:.1,head:-.25,nTh:.2,nSh:.4,nFt:.7,fTh:.28,fSh:.42,fFt:.7,nUA:.4,nFA:.28,nH:.25,fUA:.36,fFA:.22,fH:.2,eng:0})],                // cruise
+  [40.7,P({px:12,py:-230,torso:.0,head:.62,nTh:.22,nSh:.46,nFt:.7,fTh:.3,fSh:.44,fFt:.7,nUA:-.32,nFA:-.5,nH:-.45,fUA:.3,fFA:.2,fH:.2,eng:0})],                // looks back down at the forest, a hand reaching toward it
+  [41.9,P({px:12,py:-230,torso:.0,head:.62,nTh:.22,nSh:.46,nFt:.7,fTh:.3,fSh:.44,fFt:.7,nUA:-.32,nFA:-.5,nH:-.45,fUA:.3,fFA:.2,fH:.2,eng:0,head:.58})],
+  [42.9,P({px:12,py:-230,torso:.1,head:-.25,nTh:.2,nSh:.4,nFt:.7,fTh:.28,fSh:.42,fFt:.7,nUA:.4,nFA:.28,nH:.25,fUA:.36,fFA:.22,fH:.2,eng:0})],                // turns to the light again
   [99,P({px:12,py:-230,torso:.1,head:-.25,nTh:.2,nSh:.4,nFt:.7,fTh:.28,fSh:.42,fFt:.7,nUA:.4,nFA:.28,nH:.25,fUA:.36,fFA:.22,fH:.2,eng:0})],
 ];
 function poseAt(t){
@@ -776,6 +780,7 @@ const DRAW_ORDER=[['fUA','upperArm','far'],['fFA','foreArm','far'],['fH','hand',
 
 /* ---------------- timeline ---------------- */
 const DUR=47.5;
+function wideSky(t){const u=eio(clamp((t-37.4)/6.2));return{x:lerp(640,780,u),y:lerp(250,-260,u),z:1.0}}
 const SHOTS=[
   {t0:0,   t1:7.6, cam:t=>{const u=eio(t/7.6);return{x:lerp(632,646,u),y:lerp(392,416,u),z:lerp(1.0,1.12,u)}}},
   {t0:7.6, t1:14.5,cam:t=>{const u=(t-7.6)/6.9;return{x:lerp(676,670,u),y:lerp(470,478,u),z:lerp(2.75,2.95,eio(u))}}},
@@ -783,7 +788,9 @@ const SHOTS=[
   {t0:17.6,t1:27.4,cam:t=>{const u=eio((t-17.6)/9.8);const v=eio(clamp((t-21.5)/4.5));return{x:lerp(612,618,u),y:lerp(500,395,v),z:lerp(1.62,1.38,u)}}},
   {t0:27.4,t1:31.3,cam:t=>{const u=eio((t-27.4)/3.9);return{x:lerp(650,655,u),y:lerp(300,262,u),z:lerp(2.25,2.4,u)}}},
   {t0:31.3,t1:37.4,cam:t=>{const u=eio((t-31.3)/6.1);return{x:lerp(640,636,u),y:lerp(392,384,u),z:lerp(1.18,1.1,u)}}},
-  {t0:37.4,t1:99,  cam:t=>{const u=eio(clamp((t-37.4)/6.2));return{x:lerp(640,780,u),y:lerp(250,-260,u),z:1.0}}},
+  {t0:37.4,t1:40.1,cam:wideSky},
+  {t0:40.1,t1:42.5,cam:t=>{const fr=flight(t).root;const u=(t-40.1)/2.4;return{x:fr.x+fr.s*60+lerp(-6,5,u),y:fr.y-fr.s*330+lerp(4,-3,u),z:lerp(4.6,4.85,u)}}}, // insert: the look back
+  {t0:42.5,t1:99,  cam:wideSky},
 ];
 function shotAt(t){for(const s of SHOTS)if(t<s.t1)return s;return SHOTS[SHOTS.length-1]}
 const warmth=t=>ss(4,19,t);
@@ -836,7 +843,7 @@ function simStep(dt){
   SIM.treeB.forEach((b,i)=>{const tr=TREES[i];let f=0;
     if(t>14.5&&t<17)f+=Math.sin(t*41+i)*.9;
     const ringR=ringRadius(t);const d=Math.abs(tr.x-RX);
-    if(ringR>d&&ringR-d<120&&t<IGN+3)f+=Math.sign(tr.x-RX)*14*(1-(ringR-d)/120);
+    if(ringR>d&&ringR-d<120&&t<IGN+3)f+=Math.sign(tr.x-RX)*26*(1-(ringR-d)/120);
     if(t>34.6&&t<36)f+=Math.sign(tr.x-RX)*4*(1-(t-34.6)/1.4);
     b.v+=(f-b.a*14-b.v*2.2)*dt;b.a+=b.v*dt});
   // grass
@@ -1146,6 +1153,10 @@ function drawWindRing(t,cam){
   for(let i=0;i<22;i++){const a0=r()*TAU,len=.25+r()*.4;const rr=R*(.92+r()*.12);const pts=[];
     for(let k=0;k<=10;k++){const aa=a0+len*k/10;pts.push([cx+Math.cos(aa)*rr,cy+Math.sin(aa)*rr*.2-(Math.sin(aa)<0?20:0)*0])}
     ctx.globalAlpha=a*(.55+r()*.45);ink(ctx,pts,false,2.2+r()*2.5,'lit',f12*31+i,{col:'#fff8e8',light:false})}
+  // speed lines tearing outward through the trees
+  for(let i=0;i<16;i++){const ang=(r()<.5?Math.PI:0)+(r()-.5)*.5;const r0=R*(.25+r()*.5),r1=r0+60+r()*160;
+    const y0=cy-20-r()*200;const pts=[[cx+Math.cos(ang)*r0,y0],[cx+Math.cos(ang)*(r0+r1)/2,y0+(r()-.5)*8],[cx+Math.cos(ang)*r1,y0+(r()-.5)*14]];
+    ctx.globalAlpha=a*(.35+r()*.4);ink(ctx,pts,false,1.4+r()*2,'lit',f12*17+i,{col:'#fffaf0',light:false,mul:s=>Math.sin(s*Math.PI)})}
   // upward gusts around the giant
   for(let i=0;i<10;i++){const x=cx+(r()-.5)*R*.9,y=cy-r()*R*.18;const h=30+r()*60;
     ctx.globalAlpha=a*.6;ink(ctx,smooth([[x,y],[x+(r()-.5)*10,y-h*.5],[x+(r()-.5)*20,y-h]],false,5),false,1.6,'lit',i+f12,{col:'#fff6e0',light:false})}
