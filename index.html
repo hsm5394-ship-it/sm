@@ -634,7 +634,7 @@ const PARTS={
     cel(g,[[20,-48],[56,-47,1],[61,-25],[56,-4],[41,8],[23,5],[17,-22]],'ivory',m,{k:6,w:1.6,detail(g){
       // hard cast shadow of the brow
       const[,S]=tones('ivory',m);g.fillStyle=rgb(S);g.beginPath();pathPts(g,smooth([[16,-48],[64,-48],[63,-36],[44,-35],[20,-38]],true,4));g.fill();
-      for(const x of[38,44,50]){cel(g,[[x-1.6,-15],[x+1.6,-15],[x+1.6,-2],[x-1.6,-2]],'slate2',m,{k:1,w:.6,nohi:true})}
+      cel(g,[[37,-12],[54,-13],[55,-6,1],[38,-5,1]],'slate2',m,{k:1.2,w:.8,nohi:true,detail(g){for(const y of[-10.4,-8.2])line(g,[[38.5,y],[53.5,y-.5]],.55,m,(y*10)|0,{light:false,col:rgb(tones('slate',m)[0])})}});rivet(g,26,-8,1.2,m);
       chips(g,[20,-30,58,4],8,r,m,'teal');crack(g,30,-46,22,1.3,m,r);rust(g,[24,-30,54,-20],3,r,m);
     }});
     // eye sockets + lenses
@@ -725,9 +725,11 @@ const KEYS=[
   [18.4,P({head:.2,nH:-1.1,fH:-1.15})],                     // the head lifts, fingers dig
   [19.6,P({py:-80,torso:.44,head:.12,nUA:-.4,nFA:-.5,nH:-1.1,fUA:-.3,fFA:-.55,fH:-1.2})], // weight onto hands
   [20.4,P({py:-82,torso:.45,head:.1,nUA:-.4,nFA:-.5,nH:-1.1,fUA:-.3,fFA:-.55,fH:-1.2})], // hold — strain
+  [21.0,P({py:-74,torso:.52,head:.16,nUA:-.44,nFA:-.56,nH:-1.15,fUA:-.34,fFA:-.6,fH:-1.25})], // gather
   [22.0,P({px:4,py:-112,torso:.4,head:.05,nTh:-1.55,nSh:.05,nFt:0,nUA:-.36,nFA:-.42,nH:-.8,fUA:-.3,fFA:-.5,fTh:-1.05,fSh:1.45})], // one knee
   [22.8,P({px:4,py:-114,torso:.38,head:.04,nTh:-1.55,nSh:.05,nFt:0,nUA:-.36,nFA:-.42,nH:-.8,fUA:-.3,fFA:-.5,fTh:-1.05,fSh:1.45})],
-  [24.6,P({px:10,py:-196,torso:.3,head:.3,nTh:-.45,nSh:.32,nFt:0,fTh:-.2,fSh:.42,fFt:.1,nUA:-.12,nFA:-.2,nH:-.3,fUA:-.12,fFA:-.3,fH:-.4})], // rising
+  [23.6,P({px:6,py:-104,torso:.5,head:.2,nTh:-1.62,nSh:.12,nFt:0,nUA:-.4,nFA:-.48,nH:-.9,fUA:-.34,fFA:-.56,fTh:-1.12,fSh:1.42})], // sink and lean — loading the weight
+  [24.9,P({px:10,py:-196,torso:.3,head:.3,nTh:-.45,nSh:.32,nFt:0,fTh:-.2,fSh:.42,fFt:.1,nUA:-.12,nFA:-.2,nH:-.3,fUA:-.12,fFA:-.3,fH:-.4})], // rising
   [25.6,P({px:10,py:-229,torso:.02,head:.06,nTh:-.08,nSh:.06,nFt:0,fTh:.1,fSh:.0,fFt:0,nUA:.06,nFA:-.06,nH:-.1,fUA:.0,fFA:-.12,fH:-.15})], // overshoot
   [26.5,P({px:10,py:-224,torso:.08,head:.14,nTh:-.1,nSh:.08,nFt:0,fTh:.12,fSh:.02,fFt:0,nUA:.1,nFA:-.02,nH:-.06,fUA:.04,fFA:-.08,fH:-.1})], // settle
   [27.6,P({px:10,py:-224,torso:.08,head:.14,nTh:-.1,nSh:.08,nFt:0,fTh:.12,fSh:.02,fFt:0,nUA:.1,nFA:-.02,nH:-.06,fUA:.04,fFA:-.08,fH:-.1})],
@@ -969,6 +971,33 @@ function glowAt(cam,x,y,rad,col,a){
   ctx.fillStyle=g;ctx.fillRect(x-rad,y-rad,rad*2,rad*2);ctx.globalCompositeOperation='source-over';
 }
 const MINT=hex('#a9f5df'),MINT2=hex('#e9fff6');
+function lidAt(t){
+  // 1 = shut, 0 = wide open
+  let c=.62;                                       // heavy, sleeping
+  c=lerp(c,.48,ss(14.0,14.6,t));                   // a stir
+  const blink=(t0,d=.25)=>t>t0&&t<t0+d?Math.sin((t-t0)/d*Math.PI):0;
+  c=lerp(c,.3,ss(18.2,19.4,t));                    // awake
+  c=lerp(c,.08,ss(27.8,29.0,t));                   // wonder at the sky
+  c=lerp(c,.36,ss(31.4,32.2,t));                   // resolve
+  c=lerp(c,.2,ss(34.6,35.2,t));
+  c=Math.max(c,blink(14.25,.35),blink(19.6),blink(26.7),blink(30.4,.22));
+  return c;
+}
+function drawLids(t,cam,O){
+  const c=lidAt(t),m=O.head;const mode=(t>=37.4||lightLine(t)>460)?'lit':'shade';
+  const[B,S]=tones('slate',mode);
+  for(const[x,y,rx,ry]of[[39.5,-30,6.4,6.4],[55.4,-31,2.9,4.7]]){
+    camSet(cam,1);ctx.transform(m[0],m[1],m[2],m[3],m[4],m[5]);
+    ctx.save();ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,TAU);ctx.clip();
+    const ey=y-ry+2*ry*c;
+    ctx.beginPath();ctx.moveTo(x-rx-1,y-ry-1);ctx.lineTo(x+rx+1,y-ry-1);ctx.lineTo(x+rx+1,ey-ry*.15);ctx.quadraticCurveTo(x,ey+ry*.35,x-rx-1,ey-ry*.15);ctx.closePath();
+    ctx.fillStyle=rgb(B);ctx.fill();
+    ctx.beginPath();ctx.moveTo(x-rx-1,y-ry-1);ctx.lineTo(x+rx+1,y-ry-1);ctx.lineTo(x+rx+1,y-ry+ry*.5*c);ctx.lineTo(x-rx-1,y-ry+ry*.5*c);ctx.closePath();ctx.fillStyle=rgb(S);ctx.fill();
+    ctx.restore();
+    if(c>.03)ink(ctx,smooth([[x-rx,ey-ry*.15],[x,ey+ry*.32],[x+rx,ey-ry*.15]],false,6),false,.9,mode,7,{light:false});
+  }
+  ctx.setTransform(1,0,0,1,0,0);
+}
 function drawGlows(t,cam,O){
   const ci=coreI(t),ei=eyeI(t);
   if(ci>0){camSet(cam,1);const m=O.torso;ctx.transform(m[0],m[1],m[2],m[3],m[4],m[5]);
@@ -1165,7 +1194,7 @@ function render(t){
   drawShaft(t,cam,ss(9,13,t)*(1-ss(36,38,t)));
   drawEngines(t,cam,O);
   drawRobot(t,cam,O,{allLit:t>=37.4});
-  drawGlows(t,cam,O);
+  drawGlows(t,cam,O);drawLids(t,cam,O);
   if(t<37.4)drawVines(t,cam,lightLine(t)>520);
   const bs=t<15.5?birdState(t,O):null;if(bs)drawSongbird(bs,cam,lightLine(t)>440);
   drawDebris(cam,w>.5);
@@ -1178,7 +1207,7 @@ function render(t){
   // flock
   camSet(cam,1);for(const b of SIM.birds){if(t-14.62<b.delay)continue;drawFlockBird(b.x,b.y,b.s*1.3,b.ph,w>.4)}
   if(t>=34.62)drawTrail(t,cam);
-  if(t>=37.4){drawRobot(t,cam,O,{allLit:true});drawGlows(t,cam,O);drawEngines(t,cam,O)}
+  if(t>=37.4){drawRobot(t,cam,O,{allLit:true});drawGlows(t,cam,O);drawLids(t,cam,O);drawEngines(t,cam,O)}
   camSet(cam,1.35);drawLayer(LAY.fg);
   drawLeaves(cam,true);
   // ---- grade ----
