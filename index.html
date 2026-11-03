@@ -1291,9 +1291,10 @@ function render(t){
 }
 
 /* ---------------- sound: synthesized foley & score ---------------- */
-function startAudio(){
-  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
-  const A=new AC();const T0=A.currentTime+.08;
+function startAudio(offline){
+  // pass an OfflineAudioContext to render the soundtrack to a buffer (used for video export)
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC&&!offline)return null;
+  const A=offline||new AC();const T0=offline?0:A.currentTime+.08;
   const master=A.createGain();master.gain.value=.9;const comp=A.createDynamicsCompressor();master.connect(comp);comp.connect(A.destination);
   const len=A.sampleRate*3.5,imp=A.createBuffer(2,len,A.sampleRate);
   for(let ch=0;ch<2;ch++){const d=imp.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}
