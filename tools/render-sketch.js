@@ -1,11 +1,12 @@
 // Renders a photo into a sketch-drawing timelapse MP4 (30 fps, frame-exact, with pencil sound) using sketch-video.html.
 // Usage: node tools/render-sketch.js photo.jpg [out.mp4] [--ratio orig|9:16|1:1|16:9] [--dur 20]
-//                                    [--finish pencil|color] [--photo start|end|none] [--no-sound]
+//                                    [--style sketch|cari] [--face 0.5,0.38] [--finish pencil|color] [--photo start|end|none] [--no-sound]
+// --dur is in seconds (up to 300 in the page); --face is the head centre for the caricature, as fractions of the photo.
 // Needs: playwright (Chromium) and ffmpeg with libx264.
 const {chromium}=require('playwright');
 const {spawn}=require('child_process');
 const fs=require('fs'),path=require('path'),os=require('os');
-const pos=[],opt={ratio:'orig',dur:20,finish:'pencil',photo:'start',sound:true};
+const pos=[],opt={ratio:'orig',dur:20,style:'sketch',face:'0.5,0.38',finish:'pencil',photo:'start',sound:true};
 for(let a=process.argv.slice(2),i=0;i<a.length;i++){
   if(a[i]==='--no-sound')opt.sound=false;
   else if(a[i].startsWith('--')){const k=a[i].slice(2);if(!(k in opt)||a[i+1]===undefined){console.error('unknown option',a[i]);process.exit(1)}opt[k]=k==='dur'?parseFloat(a[++i]):a[++i]}
@@ -17,6 +18,7 @@ const OUT=pos[1]||path.basename(pos[0]).replace(/\.[^.]+$/,'')+'-sketch.mp4';
   const b=await chromium.launch();const p=await b.newPage({viewport:{width:1280,height:900}});
   p.on('pageerror',e=>{console.error('page error',e.message);process.exit(1)});
   await p.goto('file://'+path.resolve(__dirname,'..','sketch-video.html')+'?tool=1');
+  {const f=String(opt.face).split(',').map(Number);opt.face={x:f[0]||.5,y:f[1]||.38,r:.42}}
   await p.evaluate(o=>Object.assign(S,o),opt);
   await p.setInputFiles('#file',pos[0]);
   await p.waitForFunction('window.__ready',null,{timeout:120000});

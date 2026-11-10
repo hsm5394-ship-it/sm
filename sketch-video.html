@@ -46,7 +46,7 @@ legend{padding:0;font-size:12px;font-weight:600;letter-spacing:.06em;color:var(-
 .seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
 .seg span{display:block;padding:6px 12px;border:1px solid var(--line);border-radius:999px;font-size:14px;background:transparent}
 .seg input:checked+span{background:var(--fg);color:var(--panel);border-color:var(--fg)}
-.seg input:focus-visible+span,button:focus-visible,.pick:focus-within,.transport input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.seg input:focus-visible+span,button:focus-visible,.pick:focus-within,.transport input:focus-visible,.bar input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 button,.pick{font:500 15px/1.2 var(--body);border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--fg);
   padding:11px 14px;cursor:pointer;text-align:center}
 button:disabled{opacity:.5;cursor:default}
@@ -55,6 +55,10 @@ button:disabled{opacity:.5;cursor:default}
 .primary{background:var(--fg);color:var(--panel);border-color:var(--fg);font-weight:600}
 #play{flex:none;min-width:76px;padding:8px 12px}
 .hint{font-size:13px;color:var(--muted);margin:0}
+.bar{display:flex;align-items:center;gap:10px}
+.bar input{flex:1;min-width:0;accent-color:var(--accent)}
+.bar output{font-variant-numeric:tabular-nums;font-size:14px;min-width:4.2em;text-align:right}
+.sheet.tap #cv{cursor:crosshair}
 .check{display:flex;align-items:center;gap:8px;font-size:14px}
 .check input{accent-color:var(--accent);width:16px;height:16px;margin:0}
 .actions{display:flex;flex-direction:column;gap:8px}
@@ -87,12 +91,13 @@ button:disabled{opacity:.5;cursor:default}
         <label><input type="radio" name="ratio" id="r-11" value="1:1"><span>1:1</span></label>
         <label><input type="radio" name="ratio" id="r-169" value="16:9"><span>16:9 가로</span></label>
       </div></fieldset>
-      <fieldset><legend>영상 길이</legend><div class="seg" id="g-dur">
-        <label><input type="radio" name="dur" id="d-12" value="12"><span>12초</span></label>
-        <label><input type="radio" name="dur" id="d-20" value="20" checked><span>20초</span></label>
-        <label><input type="radio" name="dur" id="d-30" value="30"><span>30초</span></label>
-        <label><input type="radio" name="dur" id="d-45" value="45"><span>45초</span></label>
+      <fieldset><legend>영상 길이</legend><div class="bar">
+        <input type="range" id="dur" min="5" max="300" step="5" value="20" aria-label="영상 길이(초)"><output id="durv" for="dur">20초</output>
       </div></fieldset>
+      <fieldset><legend>그림 스타일</legend><div class="seg" id="g-style">
+        <label><input type="radio" name="style" id="s-sketch" value="sketch" checked><span>스케치</span></label>
+        <label><input type="radio" name="style" id="s-cari" value="cari"><span>캐리커처</span></label>
+      </div><p class="hint" id="carihint" hidden>얼굴을 크게 과장해 굵은 선으로 그립니다. 커지는 위치가 어긋나면 그림에서 얼굴을 눌러 주세요.</p></fieldset>
       <fieldset><legend>마무리</legend><div class="seg" id="g-finish">
         <label><input type="radio" name="finish" id="f-pencil" value="pencil" checked><span>연필 스케치</span></label>
         <label><input type="radio" name="finish" id="f-color" value="color"><span>색연필 채색</span></label>
@@ -119,11 +124,11 @@ button:disabled{opacity:.5;cursor:default}
 <script>
 'use strict';
 var FPS=30, TOOL=/[?&]tool=1/.test(location.search);
-var S={img:null,ratio:'orig',dur:20,finish:'pencil',photo:'start',sound:true};
+var S={img:null,ratio:'orig',dur:20,style:'sketch',finish:'pencil',photo:'start',sound:true,face:{x:.5,y:.38,r:.42}};
 var $=id=>document.getElementById(id);
 var cv=$('cv'),ctx=cv.getContext('2d');
 var W,H,dx,dy,dw,dh,T,frame=0;
-var paper,photo,pdata,lineL,toneL,colorL,M1,M2,M3,tmp,tctx,m1,m2,m3;
+var paper,photo,photo0,pdata,lineL,toneL,colorL,M1,M2,M3,tmp,tctx,m1,m2,m3;
 var O={pts:null,brk:null,n:0,cur:0},Hh={pts:null,brk:null,n:0,cur:0},C={pts:null,brk:null,n:0,cur:0};
 var lwO,lwH,lwC,pen={x:0,y:0,set:false,last:-1};
 window.__ready=false;
@@ -170,7 +175,7 @@ function resample(p,step){const q=[p[0],p[1]];
   return q}
 
 function build(){
-  const im=S.img,iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height,R=rng(7);
+  const im=S.img,iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height,R=rng(7),cari=S.style==='cari';
   if(S.ratio==='9:16'){W=1080;H=1920}else if(S.ratio==='1:1'){W=1080;H=1080}else if(S.ratio==='16:9'){W=1920;H=1080}
   else{const k=1440/Math.max(iw,ih);W=even(iw*k);H=even(ih*k)}
   cv.width=W;cv.height=H;
@@ -184,6 +189,15 @@ function build(){
     g.putImageData(id,0,0)}
 
   photo=mk(dw,dh);const pg=photo.getContext('2d',{willReadFrequently:true});pg.drawImage(im,0,0,dw,dh);
+  photo0=mk(dw,dh);photo0.getContext('2d').drawImage(photo,0,0);
+  if(cari){ // caricature: swell the head around the face point
+    const s=pg.getImageData(0,0,dw,dh).data,out=pg.createImageData(dw,dh),d=out.data;
+    const cx=S.face.x*dw,cy=S.face.y*dh,Rr=S.face.r*Math.min(dw,dh)*1.5,st=.52;
+    for(let y=0;y<dh;y++)for(let x=0;x<dw;x++){let sx=x,sy=y;const ax=x-cx,ay=y-cy,q=Math.hypot(ax,ay)/Rr;
+      if(q<1){const k=1-st*(1-q)*(1-q);sx=cx+ax*k;sy=cy+ay*k}
+      const x0=cl(sx|0,0,dw-2),y0=cl(sy|0,0,dh-2),fx=cl(sx-x0,0,1),fy=cl(sy-y0,0,1),a=(y0*dw+x0)*4,b=a+4,c=a+dw*4,e=c+4,o=(y*dw+x)*4;
+      for(let ch=0;ch<3;ch++)d[o+ch]=(s[a+ch]*(1-fx)+s[b+ch]*fx)*(1-fy)+(s[c+ch]*(1-fx)+s[e+ch]*fx)*fy;d[o+3]=255}
+    pg.putImageData(out,0,0)}
   pdata=pg.getImageData(0,0,dw,dh).data;
 
   // grayscale with stretched contrast
@@ -193,7 +207,7 @@ function build(){
   acc=0;for(let i=255;i>=0;i--){acc+=hist[i];if(acc>=n*.01){hi=i;break}}
   if(hi-lo<20){lo=Math.max(0,lo-10);hi=Math.min(255,hi+10)}
   for(let i=0;i<n;i++)G[i]=cl((G[i]*255-lo)/(hi-lo),0,1);
-  const Gs=blur(G,dw,dh,Math.max(1,Math.round(dw/700)),2);
+  const Gs=blur(G,dw,dh,Math.max(1,Math.round(dw/700))*(cari?3:1),2);
   const Bf=blur(Gs,dw,dh,Math.max(2,Math.round(dw/130)),2),Bw=blur(Gs,dw,dh,Math.max(4,Math.round(dw/26)),2);
 
   // edges: Sobel, threshold, thin, trace into pencil strokes
@@ -224,20 +238,20 @@ function build(){
   {let tot=0;for(const c of chains)tot+=c.len;let acc2=0,cut=0;while(cut<chains.length&&acc2<tot*.3){acc2+=chains[cut].len;cut++}
     const r1=order(chains.slice(0,cut),[dw*.4,dh*.2]),r2=order(chains.slice(cut),r1[1]);
     flatten(r1[0].concat(r2[0]),O)}
-  lwO=Math.max(4,dw/130);
+  lwO=Math.max(4,dw/130)*(cari?1.7:1);
 
   // pencil layers: thin lines, then hatched tone
   const mkLayer=fn=>{const c=mk(dw,dh),g=c.getContext('2d'),id=g.createImageData(dw,dh),d=id.data;
     for(let y=0;y<dh;y++)for(let x=0;x<dw;x++){const o=y*dw+x;d[o*4]=40;d[o*4+1]=38;d[o*4+2]=46;d[o*4+3]=cl(fn(o,x,y),0,1)*255}
     g.putImageData(id,0,0);return c};
   lineL=mkLayer(o=>{const e=cl((mag[o]-th*.7)/Math.max(th*2,.35),0,1),dg=cl((1-Gs[o]/(Bf[o]+.03))*1.7,0,1);
-    return Math.max(e*.8,dg*.5)*(.7+.3*R())});
+    return cari?Math.max(Math.pow(e,.7),dg*.3)*(.9+.1*R()):Math.max(e*.8,dg*.5)*(.7+.3*R())});
   const fq=2*Math.PI/Math.max(4,dw/190),tone=new Float32Array(n);
   toneL=mkLayer((o,x,y)=>{const base=cl((1-Gs[o]-.22)/.78,0,1),dg=cl(1-Gs[o]/(Bw[o]+.05),0,1);
-    const v=Math.pow(base,1.35)*.72+dg*.28,wob=Math.sin(y*.021+x*.013)*2.2;
+    let v=Math.pow(base,1.35)*.72+dg*.28;if(cari)v=Math.floor(Math.min(v,.95)*3+.15)/3*.8;const wob=Math.sin(y*.021+x*.013)*2.2;
     let tex=.42+.58*(.5+.5*Math.sin((x+y)*fq+wob));
     if(base>.45)tex=Math.min(1,tex+.4*(.5+.5*Math.sin((x-y)*fq*1.13+wob)));
-    const a=cl(v*tex*(.7+.3*R()),0,1)*.9;tone[o]=v;return a});
+    if(cari)tex=.8;const a=cl(v*tex*(.7+.3*R()),0,1)*.9;tone[o]=v;return a});
   colorL=mk(dw,dh);{const g=colorL.getContext('2d');g.drawImage(photo,0,0);g.fillStyle='rgba(255,255,255,.16)';g.fillRect(0,0,dw,dh)}
 
   // hatching: darkest patches first, each one a zigzag
@@ -319,9 +333,9 @@ function renderAt(f,clean){
   layer(M2,toneL,fill,T.col?.4+.6*(1-Math.max(uC,fill)):1,'source-over');
   layer(M1,lineL,fill,1,'source-over');
   if(clean)return;
-  if(S.photo==='start'&&t<1.9){ctx.globalAlpha=1-sm((t-1.2)/.7);ctx.drawImage(photo,dx,dy);ctx.globalAlpha=1}
+  if(S.photo==='start'&&t<1.9){ctx.globalAlpha=1-sm((t-1.2)/.7);ctx.drawImage(photo0,dx,dy);ctx.globalAlpha=1}
   if(S.photo==='end'){const q=t-(T.a3+1),w=q<=0?0:q<1?sm(q):q<1.8?1:1-sm(q-1.8);
-    if(w>0){const px=dx+dw*w;ctx.save();ctx.beginPath();ctx.rect(dx,dy,dw*w,dh);ctx.clip();ctx.drawImage(photo,dx,dy);ctx.restore();
+    if(w>0){const px=dx+dw*w;ctx.save();ctx.beginPath();ctx.rect(dx,dy,dw*w,dh);ctx.clip();ctx.drawImage(photo0,dx,dy);ctx.restore();
       if(w<1){ctx.fillStyle='#fff';ctx.fillRect(px-2,dy,4,dh);ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(px+2,dy,1,dh)}}}
 
   // pencil
@@ -385,7 +399,13 @@ function loadFile(file){
   if(!file||recording)return;
   const url=URL.createObjectURL(file),im=new Image();
   im.onload=()=>{S.img=im;S.name=(file.name||'photo').replace(/\.[^.]+$/,'');$('src').textContent='사진: '+(file.name||'붙여넣은 이미지');
-    $('result').hidden=true;rebuild(()=>{if(!TOOL)play(true)})};
+    $('result').hidden=true;const go=()=>rebuild(()=>{if(!TOOL)play(true)});
+    if(TOOL)return go();
+    S.face={x:.5,y:.38,r:.42};
+    if(window.FaceDetector){const iw=im.naturalWidth,ih=im.naturalHeight; // use the browser's face finder where it exists
+      new FaceDetector({maxDetectedFaces:4}).detect(im).then(fs=>{if(fs.length){const b=fs.sort((a,b)=>b.boundingBox.width-a.boundingBox.width)[0].boundingBox;
+        S.face={x:(b.x+b.width/2)/iw,y:(b.y+b.height/2)/ih,r:cl(Math.max(b.width,b.height)*.85/Math.min(iw,ih),.15,.6)}}}).catch(()=>{}).then(go)}
+    else go()};
   im.onerror=()=>{URL.revokeObjectURL(url);status('이 파일은 열 수 없어요. JPG나 PNG 사진을 골라 주세요.')};
   im.src=url;
 }
@@ -428,14 +448,14 @@ function record(){
   const stream=cv.captureStream(FPS);let dest=null;
   if(S.sound){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume();dest=actx.createMediaStreamDestination();
     for(const tr of dest.stream.getAudioTracks())stream.addTrack(tr)}catch(e){dest=null}}
-  let rec;try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:10e6})}catch(e){status('녹화를 시작하지 못했어요.');return}
+  let rec;try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:S.dur>60?5e6:10e6})}catch(e){status('녹화를 시작하지 못했어요.');return}
   const chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
   rec.onstop=()=>{recording=false;lock(false);stream.getTracks().forEach(t=>t.stop());
     const ext=mime.startsWith('video/mp4')?'mp4':'webm';lastBlob=new Blob(chunks,{type:mime.split(';')[0]});lastName=(S.name||'sketch')+'-sketch.'+ext;
     if(!lastBlob.size){status('녹화된 내용이 없어요. 다시 시도해 주세요.');return}
     $('out').src=URL.createObjectURL(lastBlob);$('result').hidden=false;
     status('영상이 완성됐습니다 ('+ext.toUpperCase()+', '+(lastBlob.size/1048576).toFixed(1)+'MB). 아래에서 확인하고 저장하세요.')};
-  recording=true;lock(true);status('녹화 중입니다. '+S.dur+'초 동안 이 화면을 켜 두세요.');
+  recording=true;lock(true);status('녹화 중입니다. '+fmt(S.dur)+' 동안 이 화면을 켜 두세요.');
   rec.start();onEnd=()=>setTimeout(()=>rec.stop(),300);play(true,dest);
 }
 
@@ -446,9 +466,16 @@ const sheet=$('sheet');
 ['dragleave','drop'].forEach(n=>sheet.addEventListener(n,e=>{e.preventDefault();sheet.classList.remove('over')}));
 sheet.addEventListener('drop',e=>{const f=[...e.dataTransfer.files].find(f=>f.type.startsWith('image/'));if(f)loadFile(f)});
 document.addEventListener('paste',e=>{const it=[...(e.clipboardData||{items:[]}).items].find(i=>i.type.startsWith('image/'));if(it)loadFile(it.getAsFile())});
-for(const name of ['ratio','dur','finish','photo'])for(const el of document.querySelectorAll('input[name='+name+']'))
-  el.addEventListener('change',()=>{S[name]=name==='dur'?+el.value:el.value;$('result').hidden=true;
-    if(name==='ratio')rebuild(()=>play(true));else{pause();plan();frame=0;pen.set=false;renderAt(0);ui();play(true)}});
+const replan=()=>{pause();plan();frame=0;pen.set=false;renderAt(0);ui();play(true)};
+for(const name of ['ratio','style','finish','photo'])for(const el of document.querySelectorAll('input[name='+name+']'))
+  el.addEventListener('change',()=>{S[name]=el.value;$('result').hidden=true;
+    if(name==='style'){$('carihint').hidden=S.style!=='cari';sheet.classList.toggle('tap',S.style==='cari')}
+    if(name==='ratio'||name==='style')rebuild(()=>play(true));else replan()});
+const durLabel=v=>v<60?v+'초':Math.floor(v/60)+'분'+(v%60?' '+v%60+'초':'');
+$('dur').addEventListener('input',e=>{$('durv').textContent=durLabel(+e.target.value)});
+$('dur').addEventListener('change',e=>{S.dur=+e.target.value;$('result').hidden=true;if(T)replan()});
+cv.addEventListener('click',e=>{if(S.style!=='cari'||recording||!T)return;const r=cv.getBoundingClientRect();
+  S.face.x=cl(((e.clientX-r.left)/r.width*W-dx)/dw,0,1);S.face.y=cl(((e.clientY-r.top)/r.height*H-dy)/dh,0,1);rebuild(()=>play(true))});
 $('sound').addEventListener('change',e=>{S.sound=e.target.checked;if(!S.sound)stopAudio()});
 $('play').addEventListener('click',()=>playing?pause():play(true));
 $('seek').addEventListener('input',e=>{pause();renderAt(+e.target.value);ui()});
