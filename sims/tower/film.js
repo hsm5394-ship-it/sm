@@ -66,6 +66,7 @@ const TAB = {on: new Float32Array(N), off: new Float32Array(N), rel: new Float32
   const a = createSim(true);
   const b = createSim(false);
   for (const s of [a, b]) {
+    s.quakeGain = 0.4; // a gentler shake than the page's, so the closing shot settles
     s.settle(windAt(0));
     s.step(240, windAt(0), null);
   }

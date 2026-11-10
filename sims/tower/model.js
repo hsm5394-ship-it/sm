@@ -73,7 +73,7 @@ export const quake = (tau) => {
 
 /** One tower: x1 roof sway, x2 the ball (absolute). `tmd` false locks the ball to the floor. */
 export function createSim(tmd) {
-  const s = {tmd, x1: 0, v1: 0, x2: 0, v2: 0, a1: 0, power: 0, acc2: 0, t: 0};
+  const s = {tmd, quakeGain: 1, x1: 0, v1: 0, x2: 0, v2: 0, a1: 0, power: 0, acc2: 0, t: 0};
   const H = 1 / 240;
   s.step = (dt, v, quakeTau) => {
     let left = dt;
@@ -82,7 +82,7 @@ export function createSim(tmd) {
       left -= h;
       s.t += h;
       const mean = windForce(v) * P.modal;
-      const f = mean * (1 + gust(s.t)) - P.Mstar * 1.4 * quake(quakeTau === null ? -1 : quakeTau + (dt - left));
+      const f = mean * (1 + gust(s.t)) - P.Mstar * 1.4 * s.quakeGain * quake(quakeTau === null ? -1 : quakeTau + (dt - left));
       if (s.tmd) {
         const rel = s.x2 - s.x1;
         // past 1.2 m the ball meets its bumper ring: a stiff, lossy stop (the real one allows 1.5 m)
