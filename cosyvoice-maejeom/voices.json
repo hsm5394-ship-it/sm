@@ -1,0 +1,6 @@
+{
+  "_comment": "Each voice needs a 3–10 s clean reference clip (16 kHz+ mono wav) and its exact transcript. Put clips in voices/.",
+  "minjun": {"wav": "voices/minjun.wav", "prompt_text": "여기에 minjun.wav에서 말한 내용을 그대로 적으세요."},
+  "jiho":   {"wav": "voices/jiho.wav",   "prompt_text": "여기에 jiho.wav에서 말한 내용을 그대로 적으세요."},
+  "ajumma": {"wav": "voices/ajumma.wav", "prompt_text": "여기에 ajumma.wav에서 말한 내용을 그대로 적으세요."}
+}
