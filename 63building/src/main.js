@@ -494,7 +494,7 @@ function poseParts(t) {
 function pose(t) {
   poseParts(t);
   // ground section: open during foundation/basement, closed again when steel starts
-  const open = easeInOut((t - PH.foundation.start) / 1.5) * (1 - easeInOut((t - (PH.steel.start - 0.6)) / 1.8));
+  const open = easeInOut((t - (PH.foundation.start - 0.6)) / 1.5) * (1 - easeInOut((t - (PH.steel.start - 0.6)) / 1.8));
   frontBlock.position.y = -(HOLE.d - 8) * open;
   const dig = t < HOOK_END ? 0 : easeInOut((t - at('foundation', 0.2)) / (at('foundation', 0.42) - at('foundation', 0.2)));
   pitFill.scale.y = Math.max(1e-4, 1 - dig); pitFill.visible = dig < 0.999;
