@@ -1,0 +1,18 @@
+{
+  "name": "63building-assembly",
+  "version": "1.0.0",
+  "description": "63빌딩 3D 조립 애니메이션 (Three.js + Puppeteer + FFmpeg)",
+  "scripts": {
+    "render": "node render.js",
+    "test-render": "node render.js --scale 0.5 --from 17 --to 27 --out output/test_10s_lowres.mp4"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fontsource/noto-sans-kr": "^5.3.1",
+    "puppeteer-core": "^25.17.0",
+    "three": "^0.187.0"
+  },
+  "private": true
+}

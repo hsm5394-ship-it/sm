@@ -1,0 +1,4 @@
+node_modules/
+output/.frames/
+output/check/
+output/render.log

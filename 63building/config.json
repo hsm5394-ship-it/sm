@@ -1,0 +1,121 @@
+{
+  "video": { "width": 1080, "height": 1920, "fps": 30, "duration": 60 },
+
+  "title": "63빌딩 건축 과정",
+
+  "building": {
+    "name": "63빌딩",
+    "floors": 60,
+    "basements": 3,
+    "height": 249,
+    "crownHeight": 9,
+    "basementDepth": 15,
+    "profile": [
+      { "t": 0.0,  "x": 78, "z": 54 },
+      { "t": 0.12, "x": 77, "z": 44 },
+      { "t": 0.28, "x": 76, "z": 35 },
+      { "t": 0.5,  "x": 75, "z": 27.5 },
+      { "t": 0.75, "x": 73.5, "z": 23 },
+      { "t": 1.0,  "x": 72, "z": 21 }
+    ],
+    "core": { "x": 40, "z": 11, "floorsPerSegment": 2 },
+    "baysX": 12,
+    "baysZ": 4,
+    "glassPanelsX": 6,
+    "glassPanelsZ": 2
+  },
+
+  "foundation": {
+    "rockDepth": 45,
+    "pierGrid": [11, 6],
+    "pierDiameter": 2.6,
+    "pit": { "x": 88, "z": 64 }
+  },
+
+  "colors": {
+    "glass": "#f0b446",
+    "steel": "#b83a2a",
+    "concrete": "#b4b7ba",
+    "slab": "#cfd1d2",
+    "soil": "#cdb88f",
+    "rock": "#6f7680",
+    "ground": "#b4bda6",
+    "park": "#a8c498",
+    "water": "#6fa3c8",
+    "crane": "#f0b429"
+  },
+
+  "phases": [
+    { "id": "hook",       "start": 0,  "end": 5,
+      "hook": "63빌딩은\n어떻게 지어졌을까?", "date": [1980.0, 1980.0] },
+    { "id": "foundation", "start": 5,  "end": 12, "step": "STEP 1",
+      "title": "터파기와 기초",
+      "desc": "모래 지반을 지나 약 45m 아래 암반까지\n피어 240여 개를 세웠다", "date": [1980.13, 1980.8] },
+    { "id": "basement",   "start": 12, "end": 20, "step": "STEP 2",
+      "title": "지하층과 코어",
+      "desc": "지하 3층 구조 위로\n건물의 중심, 코어가 올라간다", "date": [1980.8, 1981.5] },
+    { "id": "steel",      "start": 20, "end": 35, "step": "STEP 3",
+      "title": "철골 조립",
+      "desc": "기둥과 보를 한 층씩 쌓아 올린 철골 구조\n1983년 11월 상량", "date": [1981.5, 1983.85] },
+    { "id": "envelope",   "start": 35, "end": 47, "step": "STEP 4",
+      "title": "슬래브와 커튼월",
+      "desc": "층마다 바닥판을 채우고\n황금색 이중 반사유리 1만 3천여 장을 붙였다", "date": [1983.85, 1984.5] },
+    { "id": "finish",     "start": 47, "end": 55, "step": "STEP 5",
+      "title": "마감",
+      "desc": "옥상 설비와 전망대 설치, 타워크레인 해체\n1985년 5월 준공", "date": [1984.5, 1985.41] },
+    { "id": "ending",     "start": 55, "end": 60,
+      "endingTitle": "63빌딩 · 63스퀘어",
+      "stats": [
+        { "value": "249m", "label": "높이" },
+        { "value": "60층", "label": "지상 60 · 지하 3" },
+        { "value": "1980→1985", "label": "착공 → 준공" }
+      ],
+      "date": [1985.41, 1985.41] }
+  ],
+
+  "timeline": {
+    "from": 1979.75, "to": 1985.75,
+    "milestones": [
+      { "at": 1980.13, "label": "1980 착공" },
+      { "at": 1983.85, "label": "1983 상량" },
+      { "at": 1984.5,  "label": "1984 외벽" },
+      { "at": 1985.41, "label": "1985 준공" }
+    ]
+  },
+
+  "labels": [
+    { "text": "암반",   "pos": [-58, -52, 33], "from": 6.5,  "to": 18.5 },
+    { "text": "피어 기초", "pos": [30, -30, 30],  "from": 9.0,  "to": 14.5 },
+    { "text": "중앙 코어", "pos": [0, 40, 6],     "from": 17.0, "to": 20.5 },
+    { "text": "전망대",  "pos": [0, 238, 11],   "from": 50.0, "to": 53.5 }
+  ],
+
+  "camera": {
+    "fov": 30,
+    "shiftY": 0.065,
+    "keys": [
+      { "t": 0,    "target": [0, 128, 0],  "az": 28,   "el": 13, "dist": 1060 },
+      { "t": 3,    "target": [0, 186, 0],  "az": 40,   "el": 11, "dist": 1520 },
+      { "t": 3.7,  "target": [0, 186, 0],  "az": 43,   "el": 12, "dist": 1520 },
+      { "t": 5.2,  "target": [0, 30, 12],  "az": 30,   "el": 27, "dist": 800 },
+      { "t": 7.2,  "target": [0, -26, 30], "az": 20,   "el": 33, "dist": 600 },
+      { "t": 12,   "target": [0, -24, 28], "az": 30,   "el": 31, "dist": 580 },
+      { "t": 16,   "target": [0, -6, 18],  "az": 36,   "el": 27, "dist": 600 },
+      { "t": 20,   "target": [0, 40, 0],   "az": 38,   "el": 21, "dist": 660 },
+      { "t": 25,   "target": [0, 84, 0],   "az": 30,   "el": 18, "dist": 780 },
+      { "t": 30,   "target": [0, 132, 0],  "az": 18,   "el": 15, "dist": 940 },
+      { "t": 35,   "target": [0, 142, 0],  "az": 5,    "el": 13, "dist": 1100 },
+      { "t": 41,   "target": [0, 142, 0],  "az": -18,  "el": 12, "dist": 1100 },
+      { "t": 47,   "target": [0, 160, 0],  "az": -34,  "el": 14, "dist": 900 },
+      { "t": 51,   "target": [0, 232, 0],  "az": -50,  "el": 20, "dist": 400 },
+      { "t": 55,   "target": [0, 128, 0],  "az": -62,  "el": 13, "dist": 1060 },
+      { "t": 60,   "target": [0, 128, 0],  "az": -422, "el": 15, "dist": 1040 }
+    ]
+  },
+
+  "light": {
+    "sunsetFrom": 51.5, "sunsetTo": 56,
+    "day":    { "dir": [-0.55, 0.78, 0.5],  "color": "#fff4e2", "intensity": 2.6 },
+    "sunset": { "dir": [-0.8, 0.26, 0.42],  "color": "#ffa25e", "intensity": 4.4 }
+  }
+}
