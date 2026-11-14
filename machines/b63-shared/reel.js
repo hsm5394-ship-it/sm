@@ -57,11 +57,11 @@ const ghostAt = (t) => {
 };
 // u = seconds on the view, L = how laid out, e = how exploded
 const VIEW_FN = {
-  hero: (u, L, e) => ({tx: 0, ty: 124, tz: 0, az: 34 + 1.2 * u, el: 9, d: 1240 + 280 * e + 500 * L, sy: 22}),
+  hero: (u, L, e) => ({tx: 0, ty: 124, tz: 0, az: 34 + 1.2 * u, el: 9, d: 1290 + 280 * e + 500 * L, sy: 30}),
   row: (u, L, e) => ({tx: 0, ty: 118, tz: 0, az: 61 + 0.8 * u, el: 15, d: 1700, sy: 60}),
   core: (u, L) => ({tx: L * SLOT.core, ty: 136, tz: 0, az: 40 + 1.5 * u, el: 7, d: 1120, sy: 36}),
   base: (u, L) => ({tx: L * SLOT.base, ty: 22, tz: 0, az: 34 + 2 * u, el: 17, d: 520, sy: 36}),
-  side: (u) => ({tx: 0, ty: 124, tz: 0, az: 90 + 0.6 * u, el: 4, d: 1300, sy: 22}),
+  side: (u) => ({tx: 0, ty: 124, tz: 0, az: 90 + 0.6 * u, el: 4, d: 1350, sy: 30}),
 };
 const VIEWS = SCRIPT.filter((e) => e.view).map((e) => [e.t, e.view]);
 const camAt = (t, L, e) => {
@@ -84,16 +84,16 @@ const CSS = `
 html,body{background:#e6ebee}
 #app{font-family:${KR};color:#1f262d;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
 .rl{position:absolute;inset:0;pointer-events:none}
-.rl .tag{position:absolute;left:32px;top:118px;display:flex;align-items:center;gap:8px;font:700 13px ${KR};letter-spacing:.4px}
+.rl .tag{position:absolute;left:32px;top:102px;display:flex;align-items:center;gap:8px;font:700 13px ${KR};letter-spacing:.4px}
 .rl .tag i{display:block;width:22px;height:22px;border-radius:4px;background:#c9973a;color:#fff;font:800 12px Inter,sans-serif;font-style:normal;text-align:center;line-height:22px}
-.rl .cap{position:absolute;left:32px;right:32px;top:150px}
+.rl .cap{position:absolute;left:32px;right:32px;top:132px;text-align:center}
 .rl .cap b{display:block;font:800 43px/1.14 ${KR};letter-spacing:-1.2px}
 .rl .cap b em{font-style:normal;color:#e3562a}
 .rl .cap span{display:block;margin-top:10px;font:600 15px ${KR};color:#4d5862}
-.rl .g{position:absolute;top:706px;height:40px;padding:6px 10px;border-radius:6px;background:rgba(250,252,253,.92);border:1px solid #d7dee3}
+.rl .g{position:absolute;top:732px;height:40px;padding:6px 10px;border-radius:6px;background:rgba(250,252,253,.92);border:1px solid #d7dee3}
 .rl .g u{display:block;text-decoration:none;font:600 10.5px ${KR};color:#6b7680}
 .rl .g s{display:block;text-decoration:none;font:700 15px ${MONO};margin-top:1px;white-space:nowrap}
-.rl .bar{position:absolute;left:32px;right:32px;top:756px;height:2px;background:rgba(31,38,45,.12)}
+.rl .bar{position:absolute;left:32px;right:32px;top:782px;height:2px;background:rgba(31,38,45,.12)}
 .rl .bar i{display:block;height:2px;background:#e3562a}
 `;
 
