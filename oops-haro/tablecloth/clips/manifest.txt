@@ -1,0 +1,16 @@
+# One line per generated clip, in order:  <file in clips/>  <seconds to keep>  [seconds to skip at the start]
+# The kept seconds must add up to exactly 30. Two layouts work with the prompts in prompts/:
+#
+# A) two 15-second multi-shot generations
+# clipA.mp4 15
+# clipB.mp4 15
+#
+# B) eight single-scene generations (generate each a little long, keep the storyboard length)
+# scene-01.mp4 3
+# scene-02.mp4 4
+# scene-03.mp4 4
+# scene-04.mp4 4
+# scene-05.mp4 3
+# scene-06.mp4 4
+# scene-07.mp4 4
+# scene-08.mp4 4

@@ -1,0 +1,37 @@
+[Reference Identity]
+@Image 1 (refs/haro.webp) defines HARO: face, big brown eyes, messy brown hair, round baby body and proportions, and his outfit exactly as drawn.
+@Image 2 (refs/hana.webp) defines HANA: face, brown hair in two low pigtails with cream flower ties and a fringe, body proportions, and her outfit exactly as drawn.
+@Image 3 (refs/hajun.webp) defines HAJUN: face, tousled brown hair, body proportions, and his outfit exactly as drawn.
+Use each sheet for identity, proportions and costume only. Do not reproduce the grey studio background, the headless turnaround figures, the three-panel layout or the poses of the sheets.
+
+[Cast - locked, exactly three, nobody else]
+HARO - toddler, the youngest and smallest. HARO_OUTFIT: short-sleeved mint-green romper with mint buttons down the front and a small yellow duck patch on the left chest, barefoot.
+HANA - little girl, a head taller than Haro. Peach dress with white polka dots, round collar, puff sleeves, two cream buttons; white lace leggings; barefoot.
+HAJUN - little boy, the tallest of the three. Red T-shirt with thin white stripes, khaki shorts with rolled hems; barefoot.
+No other people, no animals, no reflections or pictures of other people.
+
+[Generation Goal]
+A 100% computer-generated, high-quality 3D cartoon animation in the style of a family animated feature: rounded appealing characters, very large expressive eyes, soft smooth stylised materials, warm pastel colours, soft feature-film lighting. The characters really move: weight shifts, blinks, breathing, fingers closing on cloth, squash-and-stretch kept gentle. Everything in the frame is the same 3D cartoon render, including the room, the table, the cloth and the props. Vertical 9:16. A gentle wordless comedy for families.
+
+[Dialogue Rules]
+No dialogue. Nobody speaks, sings or mouths words. Mouths open only for smiles, gasps and silent laughs.
+
+[Location - locked]
+One warm pastel family dining corner, the same in every shot: cream walls, pale wooden floor, one low, sturdy, rectangular light-oak table at toddler chest height in the middle of the room, two small matching chairs pushed in on the far side, a window out of frame on camera-left giving soft daylight from the left in every shot. Furniture never moves. The camera always stays on the near side of the table (no crossing the line): Haro works at the near-left corner, Hana and Hajun stand at the right end of the table.
+
+[Prop Continuity - locked, exactly one of each, all unbreakable, nothing else on the table]
+1 short plain beige tablecloth - smaller than the tabletop, bare wood visible all around it.
+1 empty pale-yellow plastic plate.
+1 empty mint plastic cup, no handle, no lid.
+1 soft white cloth napkin, folded square.
+No food, no liquid, no cutlery. Plate, cup and napkin start in the middle of the cloth, far from every edge. A prop moves only when a character moves it or moves the cloth under it. Nothing falls off the table, nothing tips over, nothing duplicates, nothing vanishes.
+State timeline: cloth crooked with plate + cup + napkin on it (S1) -> pulled a few centimetres toward the near-left corner, plate rides along (S2) -> pulled further, all three ride along and stay on the table (S3-S4) -> Haro lets go, cup wobbles and stays upright (S5) -> Hajun lifts the plate and the cup, Hana lifts the napkin, cloth is empty (S6) -> Haro smooths the empty cloth until it is square to the table (S7) -> Hajun puts the plate and the cup back, Hana hands the napkin to Haro, Haro lays it in the centre, crooked (S8).
+
+[Maintain Consistency]
+Same three faces, hair, bodies and outfits in every shot. Same room, same table, same light from the left. Same single cloth, plate, cup and napkin. Five fingers on every hand; hands never pass through cloth, props or table.
+
+[Audio]
+Generate silent picture if the model allows it. Otherwise only soft room tone and cloth/plastic foley: no voices, no music (music and effects are added in the edit).
+
+[Constraints]
+No photorealism, no live action, no real skin texture, no realistic furniture mixed with cartoon characters, no 2D, no style change between shots. No subtitles, captions, titles, on-screen text, logos or watermarks. No magic, no objects moving on their own, no object duplication, no impossible physics. No danger, no falls, no injuries, no crying. No extra limbs or fingers, no face morphing, no costume changes. No fades, no slow motion, no speed ramps, no freeze frames: hard cuts only.

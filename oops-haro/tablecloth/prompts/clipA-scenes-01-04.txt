@@ -1,0 +1,21 @@
+CLIP A - 15 seconds, vertical 9:16, four shots, hard cuts. Paste prompts/00-locks.txt first, then this. References: @Image 1 Haro, @Image 2 Hana, @Image 3 Hajun.
+
+[Shot 1 | 0-3s] - NO SPEECH
+Extreme close-up of the beige tablecloth lying clearly crooked on the oak table, one corner nearer the camera than the other; the yellow plate, the mint cup and the folded napkin sit soft-focus in the middle of it. At 1.0s the camera pushes in fast past the corner of the cloth to Haro's face just above table level: at 1.5s his big brown eyes go wide, eyebrows lift, then one corner of his mouth curls into a curious, mischievous little smile.
+Camera: macro on the cloth, then a quick smooth push-in to a close-up of Haro. Focus settles on his eyes.
+End state: Haro stands at the near-left corner of the table looking at the cloth. Hana and Hajun are not in the room yet.
+
+[Shot 2 | 3-7s] - NO SPEECH
+Side medium shot. Haro, standing at the near-left corner, reaches up with his right hand and pinches the near-left corner of the cloth, wanting to straighten it. From 4.5s he pulls it gently a few centimetres toward himself. At 5.0s the empty yellow plate slides a little with the cloth and stops. Haro tilts his head, tongue-tip between his lips, very serious.
+Camera: side-on medium, slight push toward the small hand on the cloth and the plate moving behind it.
+End state: cloth shifted a few centimetres toward the near-left corner; plate, cup and napkin still on the cloth, well inside the table edge.
+
+[Shot 3 | 7-11s] - NO SPEECH
+Top-down shot of the tabletop. Haro's small hand at the near-left corner pulls the cloth further from 8.0s: the same plate, the same cup and the same napkin glide with the cloth across the table, the plate turning slightly, the cup jiggling. They slow and stop with clear bare wood between them and every edge. Nothing leaves the table.
+Camera: straight down, drifting smoothly with the props as they travel.
+End state: cloth bunched toward the near-left corner, more crooked than before; all three props upright on it, near the table's centre-left.
+
+[Shot 4 | 11-15s] - NO SPEECH
+Wide shot of the whole dining corner. Hana and Hajun walk in from the right and stop at the right end of the table as they see the props shifted. At 12.0s both freeze mid-step: eyes huge, eyebrows shot up, mouths in small round "o" shapes, Hajun's hands half raised, Hana's fists under her chin. A comic statue beat. Haro, at the near-left corner, does not notice them: he keeps hold of the cloth corner with his right hand and studies the cloth with a frown of concentration.
+Camera: locked wide showing all three, then a slow push toward Hana and Hajun's faces.
+End state: Haro at the near-left corner still holding the cloth corner; Hana and Hajun frozen at the right end; cup, plate, napkin on the cloth. THIS FINAL FRAME IS THE FIRST FRAME OF CLIP B.

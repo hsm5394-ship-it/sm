@@ -1,0 +1,33 @@
+{
+  "duration": 30.0,
+  "fps": 30,
+  "bpm": 120,
+  "scenes": [
+    {"n": 1, "start": 0.0, "end": 3.0},
+    {"n": 2, "start": 3.0, "end": 7.0},
+    {"n": 3, "start": 7.0, "end": 11.0},
+    {"n": 4, "start": 11.0, "end": 15.0},
+    {"n": 5, "start": 15.0, "end": 18.0},
+    {"n": 6, "start": 18.0, "end": 22.0},
+    {"n": 7, "start": 22.0, "end": 26.0},
+    {"n": 8, "start": 26.0, "end": 30.0}
+  ],
+  "sfx": [
+    {"t": 1.5, "kind": "ding", "why": "S1 Haro's eyes go wide at the crooked cloth"},
+    {"t": 4.5, "kind": "swish", "dur": 0.9, "why": "S2 first gentle pull"},
+    {"t": 5.0, "kind": "tok", "why": "S2 plate nudges along with the cloth"},
+    {"t": 8.0, "kind": "swish", "dur": 1.2, "why": "S3 second, longer pull"},
+    {"t": 8.2, "kind": "rattle", "dur": 1.6, "why": "S3 plate, cup and napkin ride the cloth"},
+    {"t": 12.0, "kind": "brass", "why": "S4 Hana and Hajun freeze"},
+    {"t": 16.0, "kind": "boing", "why": "S5 cup wobbles after Haro lets go"},
+    {"t": 19.0, "kind": "tok", "why": "S6 plate lifted"},
+    {"t": 20.0, "kind": "tok", "why": "S6 cup lifted"},
+    {"t": 21.0, "kind": "tok", "soft": true, "why": "S6 napkin lifted"},
+    {"t": 23.0, "kind": "swish", "dur": 1.6, "why": "S7 Haro smooths the cloth"},
+    {"t": 25.0, "kind": "ding", "why": "S7 cloth is perfectly straight"},
+    {"t": 26.6, "kind": "tok", "why": "S8 plate set down"},
+    {"t": 27.1, "kind": "tok", "why": "S8 cup set down"},
+    {"t": 28.0, "kind": "boing", "why": "S8 the crooked napkin"},
+    {"t": 28.9, "kind": "ending", "why": "S8 wide pull-back, everyone smiling"}
+  ]
+}

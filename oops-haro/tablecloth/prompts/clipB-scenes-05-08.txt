@@ -1,0 +1,21 @@
+CLIP B - 15 seconds, vertical 9:16, four shots, hard cuts. Paste prompts/00-locks.txt first, then this. References: @Image 1 Haro, @Image 2 Hana, @Image 3 Hajun, and @Image 4 = the last frame of Clip A (first-frame / continuity reference: same positions, same prop layout, same light).
+
+[Shot 5 | 0-3s] - NO SPEECH
+Starts in exactly the state of the last frame of Clip A. Close-up of the mint cup on the cloth, Haro's hand on the cloth corner soft in the foreground. At 1.0s Haro opens his fingers and lets the cloth go; the cloth relaxes and the empty cup rocks side to side two or three times, slower each time, and settles upright. It does not fall.
+Camera: low close-up at cup height, held still so the wobble reads.
+End state: Haro's hands off the cloth; cup upright; plate and napkin unchanged.
+
+[Shot 6 | 3-7s] - NO SPEECH
+Medium shot from the near side. Hajun steps to the table and carefully lifts the yellow plate with his left hand (at 4.0s) and the mint cup with his right hand (at 5.0s), holding them against his chest. Hana picks up the folded napkin with both hands (at 6.0s). They move slowly, as if the things might run away again. Haro stands at the near-left corner with his hands on the table edge, eyes following each object as it rises.
+Camera: medium, gliding gently with the hands as each prop is lifted.
+End state: the cloth is empty and still crooked. Hajun holds the plate and the cup. Hana holds the napkin.
+
+[Shot 7 | 7-11s] - NO SPEECH
+Top-down shot of the empty beige cloth. Haro's two small hands come in from the near-left, take the cloth by its near edge and tug it square, then from 8.0s both palms stroke outward across it, pushing the wrinkles to the edges. By 10.0s the cloth lies flat with its edges parallel to the table edges. Cut-in for the last second: Haro's face, chin up, a proud closed-mouth smile.
+Camera: straight down for the smoothing, the cloth's edges visibly lining up with the table; brief close-up of Haro at the end.
+End state: cloth perfectly straight and empty. Haro beside it, pleased.
+
+[Shot 8 | 11-15s] - NO SPEECH
+Hajun sets the same yellow plate (at 11.6s) and the same mint cup (at 12.1s) back on the straight cloth. Hana holds the napkin out; Haro takes it with both hands and lays it in the centre of the cloth, at 13.0s, at a wildly crooked angle, one corner flipped up. Close-up of the crooked napkin. Cut to Hana and Hajun: Hana's eyes widen, Hajun's eyebrows pinch in disbelief; they turn to each other, hold for a beat, and both break into silent laughter. From 13.9s the camera pulls back wide: Haro beams at the table, sure that everything is perfect.
+Camera: close-up on the napkin, two-shot reaction, then a smooth wide pull-back holding all three.
+End state / final frame: straight beige cloth; one plate and one cup on it; one crooked napkin in the centre; Haro beaming; Hana and Hajun amused and smiling.
