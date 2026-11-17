@@ -1,0 +1,18 @@
+# KBO 통산 홈런 TOP 10 변화 (1982–2026)
+
+인스타그램용 막대 레이스 영상.
+
+- `kbo_hr_top10_reels.mp4`: 1080×1920 (릴스), 약 40초
+- `kbo_hr_top10_feed.mp4`: 1080×1350 (피드 4:5)
+- `*_last.png`: 2026 최종 순위 정지 이미지
+- `data.py` / `season_hr.csv`: 선수별 시즌 홈런
+
+다시 렌더링:
+
+    pip install matplotlib
+    python3 render.py 1080 1920 kbo_hr_top10_reels.mp4
+    python3 render.py 1080 1350 kbo_hr_top10_feed.mp4
+
+## 데이터 상태
+- 통산 합계(25명)와 2026 시즌 수치(최정 538, 최형우 437, 강민호 363)는 기사로 확인함.
+- 일부 시즌별 분배, 특히 1980~90년대 중하위권 선수는 검증 전 초안이다. 게시 전 KBO 기록실이나 스탯티즈와 대조할 것.
