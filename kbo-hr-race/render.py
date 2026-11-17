@@ -2,9 +2,15 @@ import sys, subprocess, numpy as np, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import font_manager as fm
-from data import D
 
 W, H = int(sys.argv[1]), int(sys.argv[2]); OUT = sys.argv[3]
+STAT = sys.argv[4] if len(sys.argv) > 4 else "hr"
+if STAT == "sb":
+    from data_sb import D
+    LBL, SUB_INTRO = "도루", "45시즌, 대도들의 역사"
+else:
+    from data import D
+    LBL, SUB_INTRO = "홈런", "45시즌, 홈런 순위의 역사"
 import matplotlib.patches
 FPS, PER_YEAR, HOLD = 30, 24, 120
 Y0, Y1 = 1982, 2026
@@ -89,7 +95,7 @@ def draw(ya, yb, t):
     ax.text(0.98, 0.04, str(year), transform=ax.transAxes, ha="right", va="bottom",
             fontproperties=BOLD, fontsize=W/7, color=FG, alpha=0.16, zorder=1)
     top = 0.955 if portrait else 0.95
-    fig.text(0.06, top, "KBO 통산 홈런", fontproperties=BOLD, fontsize=W/14, color=FG, va="top")
+    fig.text(0.06, top, f"KBO 통산 {LBL}", fontproperties=BOLD, fontsize=W/14, color=FG, va="top")
     fig.text(0.06, top-(0.068 if portrait else 0.10), "TOP 10 변화 1982–2026",
              fontproperties=BOLD, fontsize=W/22, color="#FFB400", va="top")
     fig.text(0.06, top-(0.112 if portrait else 0.165), "프로야구 출범부터 2026 시즌 종료까지 · 정규시즌 기준",
@@ -127,13 +133,13 @@ def card(kind, a):
     cy = 0.5
     if kind == "intro":
         fig.text(0.5, cy+0.10, "KBO", ha="center", fontproperties=BOLD, fontsize=W/9, color=FG, alpha=a)
-        fig.text(0.5, cy+0.02, "통산 홈런 TOP 10", ha="center", fontproperties=BOLD, fontsize=W/13, color=FG, alpha=a)
+        fig.text(0.5, cy+0.02, f"통산 {LBL} TOP 10", ha="center", fontproperties=BOLD, fontsize=W/13, color=FG, alpha=a)
         fig.text(0.5, cy-0.06, "1982 → 2026", ha="center", fontproperties=BOLD, fontsize=W/15, color=GOLD, alpha=a)
-        fig.text(0.5, cy-0.13, "45시즌, 홈런 순위의 역사", ha="center", fontproperties=REG, fontsize=W/34, color=MUT, alpha=a)
+        fig.text(0.5, cy-0.13, SUB_INTRO, ha="center", fontproperties=REG, fontsize=W/34, color=MUT, alpha=a)
     else:
         fin = sorted(players, key=lambda p: -cum[p][Y1])[:3]
         fig.text(0.5, cy+0.16, "2026 시즌 종료 기준", ha="center", fontproperties=REG, fontsize=W/32, color=MUT, alpha=a)
-        fig.text(0.5, cy+0.08, "KBO 통산 홈런 1위", ha="center", fontproperties=BOLD, fontsize=W/18, color=FG, alpha=a)
+        fig.text(0.5, cy+0.08, f"KBO 통산 {LBL} 1위", ha="center", fontproperties=BOLD, fontsize=W/18, color=FG, alpha=a)
         fig.text(0.5, cy-0.03, f"{fin[0]} {cum[fin[0]][Y1]}", ha="center", fontproperties=BOLD, fontsize=W/8, color=GOLD, alpha=a)
         sub = "   ".join(f"{i+2}위 {p} {cum[p][Y1]}" for i, p in enumerate(fin[1:]))
         fig.text(0.5, cy-0.11, sub, ha="center", fontproperties=REG, fontsize=W/30, color=FG, alpha=a)
