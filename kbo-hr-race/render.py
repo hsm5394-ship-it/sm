@@ -5,6 +5,7 @@ from matplotlib import font_manager as fm
 from data import D
 
 W, H = int(sys.argv[1]), int(sys.argv[2]); OUT = sys.argv[3]
+import matplotlib.patches
 FPS, PER_YEAR, HOLD = 30, 24, 120
 Y0, Y1 = 1982, 2026
 for f in ["/usr/share/fonts/truetype/nanum/NanumSquareB.ttf","/usr/share/fonts/truetype/nanum/NanumSquareR.ttf"]:
@@ -52,7 +53,15 @@ proc = subprocess.Popen(["ffmpeg","-y","-loglevel","error","-f","rawvideo","-pix
     "-s",f"{W}x{H}","-r",str(FPS),"-i","-","-c:v","libx264","-pix_fmt","yuv420p",
     "-crf","18","-preset","medium","-movflags","+faststart",OUT], stdin=subprocess.PIPE)
 
+ST = {"frame": 0, "leader": None, "banner": None, "events": []}
+GOLD = "#FFB400"
+def emit():
+    fig.canvas.draw()
+    proc.stdin.write(fig.canvas.buffer_rgba().tobytes())
+    ST["frame"] += 1
+
 def draw(ya, yb, t):
+    ax.set_visible(True)
     ax.clear(); ax.set_facecolor(BG)
     for txt in list(fig.texts): txt.remove()
     te = ease(t)
@@ -85,17 +94,63 @@ def draw(ya, yb, t):
              fontproperties=BOLD, fontsize=W/22, color="#FFB400", va="top")
     fig.text(0.06, top-(0.112 if portrait else 0.165), "프로야구 출범부터 2026 시즌 종료까지 · 정규시즌 기준",
              fontproperties=REG, fontsize=W/48, color=MUT, va="top")
-    leader = min(rows, key=lambda x: x[2])[0]
-    fig.text(0.06, 0.105 if portrait else 0.055, f"{year}년 통산 1위  {leader}",
+    leader = srt[0]
+    if ST["leader"] is not None and leader != ST["leader"]:
+        ST["banner"] = (leader, ST["frame"], int(round(val[leader])))
+        ST["events"].append(ST["frame"] / FPS)
+    ST["leader"] = leader
+    if ST["banner"]:
+        name, f0, _ = ST["banner"]; k = ST["frame"] - f0
+        if k < 75:
+            a = min(1, k / 6) * min(1, (75 - k) / 12)
+            pop = 1 + 0.25 * max(0, 1 - k / 8)
+            by = 0.792 if portrait else 0.058
+            fig.text(0.94, by, f"새 통산 1위  {name}", ha="right", va="center",
+                     fontproperties=BOLD, fontsize=W/30*pop, color=BG, alpha=a,
+                     bbox=dict(boxstyle="round,pad=0.45", fc=GOLD, ec="none", alpha=a))
+    # year progress bar
+    prog = ((ya - Y0) + te) / (Y1 - Y0)
+    py = 0.135 if portrait else 0.088
+    fig.patches.clear()
+    fig.patches.append(matplotlib.patches.Rectangle((0.06, py), 0.88, 0.004, transform=fig.transFigure, color=GRID, figure=fig))
+    fig.patches.append(matplotlib.patches.Rectangle((0.06, py), 0.88*prog, 0.004, transform=fig.transFigure, color=GOLD, figure=fig))
+    fig.text(0.06, 0.09 if portrait else 0.045, f"{year}년 통산 1위  {leader}",
              fontproperties=BOLD, fontsize=W/34, color=FG, va="bottom")
-    fig.text(0.06, 0.06 if portrait else 0.02, "단위: 개", fontproperties=REG,
-             fontsize=W/56, color=MUT, va="bottom")
-    fig.canvas.draw()
-    proc.stdin.write(fig.canvas.buffer_rgba().tobytes())
+    showing = ST["banner"] and ST["frame"] - ST["banner"][1] < 75
+    if portrait or not showing: fig.text(0.94, 0.09 if portrait else 0.045, "단위: 개", fontproperties=REG, ha="right",
+             fontsize=W/50, color=MUT, va="bottom")
+    emit()
 
-for _ in range(30): draw(Y0, Y0, 0)
+def card(kind, a):
+    ax.set_visible(False); fig.patches.clear()
+    for txt in list(fig.texts): txt.remove()
+    cy = 0.5
+    if kind == "intro":
+        fig.text(0.5, cy+0.10, "KBO", ha="center", fontproperties=BOLD, fontsize=W/9, color=FG, alpha=a)
+        fig.text(0.5, cy+0.02, "통산 홈런 TOP 10", ha="center", fontproperties=BOLD, fontsize=W/13, color=FG, alpha=a)
+        fig.text(0.5, cy-0.06, "1982 → 2026", ha="center", fontproperties=BOLD, fontsize=W/15, color=GOLD, alpha=a)
+        fig.text(0.5, cy-0.13, "45시즌, 홈런 순위의 역사", ha="center", fontproperties=REG, fontsize=W/34, color=MUT, alpha=a)
+    else:
+        fin = sorted(players, key=lambda p: -cum[p][Y1])[:3]
+        fig.text(0.5, cy+0.16, "2026 시즌 종료 기준", ha="center", fontproperties=REG, fontsize=W/32, color=MUT, alpha=a)
+        fig.text(0.5, cy+0.08, "KBO 통산 홈런 1위", ha="center", fontproperties=BOLD, fontsize=W/18, color=FG, alpha=a)
+        fig.text(0.5, cy-0.03, f"{fin[0]} {cum[fin[0]][Y1]}", ha="center", fontproperties=BOLD, fontsize=W/8, color=GOLD, alpha=a)
+        sub = "   ".join(f"{i+2}위 {p} {cum[p][Y1]}" for i, p in enumerate(fin[1:]))
+        fig.text(0.5, cy-0.11, sub, ha="center", fontproperties=REG, fontsize=W/30, color=FG, alpha=a)
+        fig.text(0.5, 0.08, "KBO 정규시즌 기록", ha="center", fontproperties=REG, fontsize=W/44, color=MUT, alpha=a)
+    emit()
+
+INTRO = 66
+for i in range(INTRO): card("intro", min(1, i/12) * min(1, (INTRO-i)/10))
+RACE0 = ST["frame"] / FPS
+for _ in range(24): draw(Y0, Y0, 0)
 for y in range(Y0, Y1):
     for i in range(PER_YEAR): draw(y, y+1, i/PER_YEAR)
 for _ in range(HOLD): draw(Y1, Y1, 0)
 fig.savefig(OUT.replace(".mp4", "_last.png"), facecolor=BG)
-proc.stdin.close(); proc.wait(); print("done", OUT)
+END0 = ST["frame"] / FPS
+for i in range(105): card("end", min(1, i/12))
+proc.stdin.close(); proc.wait()
+import json; json.dump({"dur": ST["frame"]/FPS, "race0": RACE0, "end0": END0,
+    "events": ST["events"]}, open(OUT + ".json", "w"))
+print("done", OUT, ST["frame"]/FPS, ST["events"])

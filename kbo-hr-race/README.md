@@ -2,7 +2,7 @@
 
 인스타그램용 막대 레이스 영상.
 
-- `kbo_hr_top10_reels.mp4`: 1080×1920 (릴스), 약 40초
+- `kbo_hr_top10_reels.mp4`: 1080×1920 (릴스), 약 46초 (인트로·엔딩·배경음 포함)
 - `kbo_hr_top10_feed.mp4`: 1080×1350 (피드 4:5)
 - `*_last.png`: 2026 최종 순위 정지 이미지
 - `data.py` / `season_hr.csv`: 선수별 시즌 홈런
@@ -12,6 +12,7 @@
     pip install matplotlib
     python3 render.py 1080 1920 kbo_hr_top10_reels.mp4
     python3 render.py 1080 1350 kbo_hr_top10_feed.mp4
+    python3 music.py kbo_hr_top10_reels.mp4.json bgm.wav   (배경음 합성 후 ffmpeg로 영상과 합치기)
 
 ## 데이터 상태
 - 통산 합계(25명)와 2026 시즌 수치(최정 538, 최형우 437, 강민호 363)는 기사로 확인함.
