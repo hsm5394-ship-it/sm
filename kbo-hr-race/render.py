@@ -5,7 +5,10 @@ from matplotlib import font_manager as fm
 
 W, H = int(sys.argv[1]), int(sys.argv[2]); OUT = sys.argv[3]
 STAT = sys.argv[4] if len(sys.argv) > 4 else "hr"
-if STAT == "sb":
+if STAT == "hit":
+    from data_hit import D
+    LBL, SUB_INTRO = "안타", "45시즌, 안타 순위의 역사"
+elif STAT == "sb":
     from data_sb import D
     LBL, SUB_INTRO = "도루", "45시즌, 대도들의 역사"
 else:
@@ -78,14 +81,14 @@ def draw(ya, yb, t):
         POS[p] = tgt if p not in POS else POS[p] + (tgt - POS[p]) * 0.3
     rows = [(p, val[p], POS[p]) for p in players if POS[p] < 10.5 and val[p] > 0]
     vmax = max(v for _, v, _ in rows)
-    xmax = vmax * 1.18
+    xmax = vmax * (1.24 if vmax >= 1000 else 1.18)
     for p, v, r in rows:
         a = max(0.0, min(1.0, (9.9 - r) / 0.5))
         ax.barh(r, v, height=0.78, color=COL[p], alpha=a, zorder=3)
         ax.text(-xmax*0.02, r, p, ha="right", va="center", fontproperties=BOLD,
                 fontsize=W/26, color=FG, alpha=a)
         ax.text(v + xmax*0.012, r, f"{int(round(v))}", ha="left", va="center",
-                fontproperties=BOLD, fontsize=W/30, color=FG, alpha=a, clip_on=True)
+                fontproperties=BOLD, fontsize=W/30, color=FG, alpha=a)
     ax.set_ylim(9.6, -0.6); ax.set_xlim(0, xmax)
     ax.set_yticks([]); ax.tick_params(axis="x", colors=MUT, labelsize=W/60, length=0)
     for lab in ax.get_xticklabels(): lab.set_fontproperties(REG); lab.set_fontsize(W/62)
